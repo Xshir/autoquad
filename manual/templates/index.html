@@ -4,7 +4,12 @@
     <title>Video Stream</title>
 </head>
 <body>
-    <h1>Video Stream</h1>
+    <h1>Scanned QR Codes</h1>
+    <ul>
+        {% for item in scanned_items %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
     <img src="{{ url_for('video_feed') }}" width="640" height="480">
 </body>
 </html>
