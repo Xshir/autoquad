@@ -25,5 +25,3 @@ class Camera:
 
         return frame
 
-    def release(self):
-        self.cap.release()

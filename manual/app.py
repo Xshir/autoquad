@@ -23,11 +23,4 @@ def video_feed():
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
 
-# Release the camera when the app exits
-@app.before_request
-def before_request():
-    pass
 
-@app.teardown_appcontext
-def teardown_request(exception):
-    camera.release()
