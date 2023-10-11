@@ -4,10 +4,10 @@ from pyzbar.pyzbar import decode
 from pyzbar.pyzbar import ZBarSymbol
 
 app = Flask(__name__)
+scanned_items = []
 
 def generate_frames():
     cap = cv2.VideoCapture(0)  # Use 0 for the default camera
-    scanned_items = []
     supported_symbols = [ZBarSymbol.CODE128, ZBarSymbol.QRCODE]
 
     while True:
@@ -37,7 +37,7 @@ def generate_frames():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', scanned_items=scanned_items)
 
 @app.route('/video_feed')
 def video_feed():
