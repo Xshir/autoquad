@@ -3,7 +3,7 @@ from flask import Flask, render_template, Response
 from pyzbar.pyzbar import decode
 from pyzbar.pyzbar import ZBarSymbol
 
-app = Flask(__name)
+app = Flask(__name__)
 
 def generate_frames():
     cap = cv2.VideoCapture(0)  # Use 0 for the default camera
