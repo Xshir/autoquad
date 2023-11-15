@@ -1,5 +1,6 @@
 from dronekit import connect, VehicleMode
 import time
+from lidar import read_tfluna_data
 
 class AutonomousQuadcopter:
 
@@ -16,8 +17,8 @@ class AutonomousQuadcopter:
         while True:
             self.vehicle.channels.overrides['3'] = takeoff_throttle
             time.sleep(0.2)  # Wait for stability
-
-            current_altitude = self.vehicle.location.global_relative_frame.alt
+            distance, temp, signal_strength = read_tfluna_data()
+            current_altitude = distance
 
             # Check if altitude requirements are met
             print(f"Altitude: {current_altitude} meters")
