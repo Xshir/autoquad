@@ -83,7 +83,7 @@ class AutonomousQuadcopter:
         print("[PROGRAM STATUS]: TAKEOFF")
         result_of_takeoff = self.takeoff(1100, 1)
         if result_of_takeoff > 0: # successful takeoff since rpm is not 0 indicating no takeoff failure.
-            self.roll(takeoff_rpm, 'right', 1, 50)
+            #self.roll(takeoff_rpm, 'right', 1, 50)
             # Landing phase
             self.vehicle.mode = VehicleMode("LAND")
             print("[Quadcopter] Landing Now.")
