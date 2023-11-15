@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 scanned_items = []
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(-1)
 
 def generate_frames():
     supported_symbols = [ZBarSymbol.CODE128, ZBarSymbol.QRCODE]
