@@ -7,10 +7,14 @@ import threading
 
 vehicle = AutonomousQuadcopter()
 webapp_thread = threading.Thread(target=run_webapp)
+fly = False
 
 try:
-    target_altitude = 0.3 
-    vehicle.basic_mission(target_altitude)
+    target_altitude = 0.3
+    if not fly:
+        print('not flying')
+    else: 
+        vehicle.basic_mission(target_altitude)
 except Exception as e:
     print(f"An error occurred: {e}")
 
