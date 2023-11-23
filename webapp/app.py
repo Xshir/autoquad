@@ -71,5 +71,5 @@ def download_csv():
 def get_scanned_items():
     return jsonify(scanned_items)
 
-def run_webapp():
-    app.run(host='0.0.0.0', port=5000)
+def run_webapp(): 
+    app.run(host='192.168.0.194', port=5000) # change host to hostname -I output for rpi linux distros
