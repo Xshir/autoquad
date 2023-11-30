@@ -22,7 +22,7 @@ class AutonomousQuadcopter:
 
             # Check if altitude requirements are met
             print(f"Altitude: {current_altitude} meters")
-            if current_altitude >= target_altitude * 0.80:
+            if current_altitude >= target_altitude * 0.90:
                 print(f"[QUADCOPTER] Altitude Reached\nAltitude Level: {current_altitude}m | ({current_altitude/target_altitude}% of Target Altitude) | Reached RPM: {takeoff_throttle}")
                 break
 
@@ -85,5 +85,6 @@ class AutonomousQuadcopter:
         if result_of_takeoff > 0: # successful takeoff since rpm is not 0 indicating no takeoff failure.
             #self.roll(takeoff_rpm, 'right', 1, 50)
             # Landing phase
+            time.sleep(1)
             self.vehicle.mode = VehicleMode("LAND")
             print("[Quadcopter] Landing Now.")
