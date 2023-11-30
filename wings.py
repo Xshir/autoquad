@@ -10,7 +10,7 @@ class AutonomousQuadcopter:
         
     
     def takeoff(self, rpm, target_altitude):
-        self.vehicle.mode = VehicleMode("ALT_HOLD")
+        self.vehicle.mode = VehicleMode("ALT_HOLD")                        
         takeoff_throttle = rpm
         start_time = time.time()  # Record the start time
 
@@ -55,7 +55,9 @@ class AutonomousQuadcopter:
         self.vehicle.channels.overrides['1'] = takeoff_rpm + roll_value
         time.sleep(duration)
 
-        self.vehicle.channels.overrides['1'] = takeoff_rpm # Docs say value can be None to reset also
+        self.vehicle.channels.overrides['1'] = takeoff_rpm # Docs say value can be
+        
+        
     
 
     def basic_mission(self, target_altitude):

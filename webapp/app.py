@@ -72,4 +72,6 @@ def get_scanned_items():
     return jsonify(scanned_items)
 
 def run_webapp(): 
-    app.run(host='192.168.0.194', port=5000) # change host to hostname -I output for rpi linux distros
+    app.run(host='192.168.0.46', port=5000) # change host to hostname -I output for rpi linux distros
+
+run_webapp()
