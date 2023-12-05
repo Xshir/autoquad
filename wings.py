@@ -9,8 +9,19 @@ class AutonomousQuadcopter:
         self.vehicle = connect(serial_port, baud=baud_rate, wait_ready=True)
         
     
+    def altitude_control(self, current_altitude, target_altitude, current_throttle):
+        altitude_difference = current_altitude - target_altitude
+
+        if abs(altitude_difference) <= 0.5:  # A small tolerance to avoid constant adjustments
+            return current_throttle  # No adjustment needed
+
+        # Adjust throttle based on altitude difference
+        throttle_adjustment = 10 * (altitude_difference / abs(altitude_difference))
+        new_throttle = max(1000, min(1600, current_throttle + throttle_adjustment))
+        return new_throttle
+
     def takeoff(self, rpm, target_altitude):
-        self.vehicle.mode = VehicleMode("ALT_HOLD")                        
+        self.vehicle.mode = VehicleMode("ALT_HOLD")
         takeoff_throttle = rpm
         start_time = time.time()  # Record the start time
 
@@ -40,8 +51,8 @@ class AutonomousQuadcopter:
                 self.vehicle.mode = VehicleMode("LAND")
                 return 0  # Indicate that takeoff failed
 
-            # Increase power by 10 units until altitude reached
-            takeoff_throttle += 10
+            # Adjust throttle based on altitude difference
+            takeoff_throttle = self.altitude_control(current_altitude, target_altitude, takeoff_throttle)
 
         return takeoff_throttle
     
