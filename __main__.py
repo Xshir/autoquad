@@ -6,8 +6,8 @@ import threading
 
 
 vehicle = AutonomousQuadcopter()
-webapp_thread = threading.Thread(target=run_webapp)
-fly = False
+#webapp_thread = threading.Thread(target=run_webapp)
+fly = True
 
 try:
     target_altitude = 0.3

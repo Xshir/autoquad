@@ -27,7 +27,7 @@ class AutonomousQuadcopter:
                 break
 
             # Check if RPM exceeds 1600
-            if takeoff_throttle > 1600:
+            if takeoff_throttle > 1600 or ():
                 print("[FAILSAFE] RPM exceeded 1600 - Cutting power and landing.")
                 self.vehicle.channels.overrides['3'] = 1000  # Set throttle to minimum
                 self.vehicle.mode = VehicleMode("LAND")
@@ -67,8 +67,8 @@ class AutonomousQuadcopter:
         """
         takeoff_rpm = 1300
         startup_mode = "STABILIZE"
-        self.vehicle.mode = VehicleMode(startup_mode)  # indoor flight without GPS mode
-        print(f"[PROGRAM STATUS]: MODE SET TO {startup_mode}")
+        self.vehicle.mode = VehicleMode(startup_mode)  # indoor flight without GPS mode 
+        print(f"[PROGRAM STATUS]: MODE SET TO {startup_mode} | BATT: {self.vehicle.battery.level} @ {self.vehicle.battery.current}") 
         self.vehicle.armed = True
 
         loop_count = 0
@@ -81,9 +81,13 @@ class AutonomousQuadcopter:
 
 
         print("[PROGRAM STATUS]: ARM SET | ARM COMPLETE")
-        time.sleep(3)
         print("[PROGRAM STATUS]: TAKEOFF")
-        result_of_takeoff = self.takeoff(1100, 1)
+        if self.vehicle.armed:
+            result_of_takeoff = self.takeoff(1100, 1)
+            print(f"Vehicle is armed: {self.vehicle.armed} on takeoff!")
+        elif not self.vehicle.armed:
+            print(f"Vehicle is armed: {self.vehicle.armed} on takeoff!")
+
         if result_of_takeoff > 0: # successful takeoff since rpm is not 0 indicating no takeoff failure.
             #self.roll(takeoff_rpm, 'right', 1, 50)
             # Landing phase
