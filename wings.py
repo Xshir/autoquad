@@ -10,6 +10,8 @@ class AutonomousQuadcopter:
         
     
     def altitude_control(self, current_altitude, target_altitude, current_throttle):
+        print(f"Altitude: {current_altitude} meters")
+
         altitude_difference = current_altitude - target_altitude
 
         if abs(altitude_difference) <= 0.5:  # A small tolerance to avoid constant adjustments
@@ -18,43 +20,60 @@ class AutonomousQuadcopter:
         # Adjust throttle based on altitude difference
         throttle_adjustment = 10 * (altitude_difference / abs(altitude_difference))
         new_throttle = max(1000, min(1600, current_throttle + throttle_adjustment))
-        return new_throttle
+        print(new_throttle)
+        return int(new_throttle)
 
     def takeoff(self, rpm, target_altitude):
         self.vehicle.mode = VehicleMode("ALT_HOLD")
         takeoff_throttle = rpm
         start_time = time.time()  # Record the start time
+        reached_target_altitude = False
 
         while True:
-            self.vehicle.channels.overrides['3'] = takeoff_throttle
+            self.vehicle.channels.overrides['3'] = int(takeoff_throttle)
             time.sleep(0.2)  # Wait for stability
             distance, temp, signal_strength = read_tfluna_data()
+            self.current_altitude = distance
             current_altitude = distance
 
             # Check if altitude requirements are met
             print(f"Altitude: {current_altitude} meters")
             if current_altitude >= target_altitude * 0.90:
-                print(f"[QUADCOPTER] Altitude Reached\nAltitude Level: {current_altitude}m | ({current_altitude/target_altitude}% of Target Altitude) | Reached RPM: {takeoff_throttle}")
-                break
+                if not reached_target_altitude:
+                    reached_target_altitude = True
+                    print(f"[QUADCOPTER] Altitude Reached\nAltitude Level: {current_altitude}m | ({current_altitude/target_altitude}% of Target Altitude) | Reached RPM: {takeoff_throttle}")
+                else:
+                    # Hovering logic
+                    if current_altitude >= target_altitude + 0.4:
+                        takeoff_throttle -= 20  # Reduce throttle
+                    else:
+                        takeoff_throttle += 20  # Increase throttle
 
-            # Check if RPM exceeds 1600
-            if takeoff_throttle > 1600 or ():
-                print("[FAILSAFE] RPM exceeded 1600 - Cutting power and landing.")
+            # Check if RPM exceeds 1660
+            if takeoff_throttle > 1700:
+                print("[FAILSAFE] RPM exceeded 1660 - Cutting power and landing.")
                 self.vehicle.channels.overrides['3'] = 1000  # Set throttle to minimum
-                self.vehicle.mode = VehicleMode("LAND")
+                # self.vehicle.mode = VehicleMode("LAND")
+                self.vehicle.armed = False
                 return 0  # Indicate that takeoff failed
 
             # Check if it's been more than 5 seconds
             if time.time() - start_time > 5:
                 print("[FAILSAFE] Takeoff not successful within 5 seconds - Cutting power and landing.")
                 self.vehicle.channels.overrides['3'] = 1000  # Set throttle to minimum
-                self.vehicle.mode = VehicleMode("LAND")
+                # self.vehicle.mode = VehicleMode("LAND")
+                self.vehicle.armed = False
                 return 0  # Indicate that takeoff failed
 
-            # Adjust throttle based on altitude difference
-            takeoff_throttle = self.altitude_control(current_altitude, target_altitude, takeoff_throttle)
+            # Break the loop if altitude is within 0.4cm of the target for hovering
+            if reached_target_altitude and target_altitude - 0.4 <= current_altitude <= target_altitude + 0.4:
+                break
+
+            print(takeoff_throttle)
 
         return takeoff_throttle
+
+
     
     def roll(self, takeoff_rpm, direction, duration, bank):
         if direction == "left":
@@ -94,7 +113,7 @@ class AutonomousQuadcopter:
         print("[PROGRAM STATUS]: ARM SET | ARM COMPLETE")
         print("[PROGRAM STATUS]: TAKEOFF")
         if self.vehicle.armed:
-            result_of_takeoff = self.takeoff(1100, 1)
+            result_of_takeoff = self.takeoff(1300, 1)
             print(f"Vehicle is armed: {self.vehicle.armed} on takeoff!")
         elif not self.vehicle.armed:
             print(f"Vehicle is armed: {self.vehicle.armed} on takeoff!")
