@@ -8,20 +8,6 @@ class AutonomousQuadcopter:
         serial_port = '/dev/ttyACM0'; baud_rate = 9600
         self.vehicle = connect(serial_port, baud=baud_rate, wait_ready=True)
         
-    
-    def altitude_control(self, current_altitude, target_altitude, current_throttle):
-        print(f"Altitude: {current_altitude} meters")
-
-        altitude_difference = current_altitude - target_altitude
-
-        if abs(altitude_difference) <= 0.5:  # A small tolerance to avoid constant adjustments
-            return current_throttle  # No adjustment needed
-
-        # Adjust throttle based on altitude difference
-        throttle_adjustment = 10 * (altitude_difference / abs(altitude_difference))
-        new_throttle = max(1000, min(1600, current_throttle + throttle_adjustment))
-        print(new_throttle)
-        return int(new_throttle)
 
     def takeoff(self, rpm, target_altitude):
         self.vehicle.mode = VehicleMode("ALT_HOLD")
@@ -41,16 +27,11 @@ class AutonomousQuadcopter:
             if current_altitude >= target_altitude * 0.90:
                 if not reached_target_altitude:
                     reached_target_altitude = True
-                    print(f"[QUADCOPTER] Altitude Reached\nAltitude Level: {current_altitude}m | ({current_altitude/target_altitude}% of Target Altitude) | Reached RPM: {takeoff_throttle}")
-                else:
-                    # Hovering logic
-                    if current_altitude >= target_altitude + 0.4:
-                        takeoff_throttle -= 20  # Reduce throttle
-                    else:
-                        takeoff_throttle += 20  # Increase throttle
+                    print(f"[QUADCOPTER] Altitude Reached\nAltitude Level: {current_altitude}m | ({current_altitude/target_altitude}% of Target Altitude ({target_altitude})) | Reached RPM: {takeoff_throttle}")
+
 
             # Check if RPM exceeds 1660
-            if takeoff_throttle > 1700:
+            if takeoff_throttle > 1800:
                 print("[FAILSAFE] RPM exceeded 1660 - Cutting power and landing.")
                 self.vehicle.channels.overrides['3'] = 1000  # Set throttle to minimum
                 # self.vehicle.mode = VehicleMode("LAND")
@@ -58,7 +39,7 @@ class AutonomousQuadcopter:
                 return 0  # Indicate that takeoff failed
 
             # Check if it's been more than 5 seconds
-            if time.time() - start_time > 5:
+            if time.time() - start_time > 10:
                 print("[FAILSAFE] Takeoff not successful within 5 seconds - Cutting power and landing.")
                 self.vehicle.channels.overrides['3'] = 1000  # Set throttle to minimum
                 # self.vehicle.mode = VehicleMode("LAND")
@@ -69,6 +50,9 @@ class AutonomousQuadcopter:
             if reached_target_altitude and target_altitude - 0.4 <= current_altitude <= target_altitude + 0.4:
                 break
 
+            if takeoff_throttle != 1680:
+                takeoff_throttle += 20
+                
             print(takeoff_throttle)
 
         return takeoff_throttle
@@ -120,7 +104,6 @@ class AutonomousQuadcopter:
 
         if result_of_takeoff > 0: # successful takeoff since rpm is not 0 indicating no takeoff failure.
             #self.roll(takeoff_rpm, 'right', 1, 50)
-            # Landing phase
-            time.sleep(1)
+            # Landing phase6
             self.vehicle.mode = VehicleMode("LAND")
             print("[Quadcopter] Landing Now.")
