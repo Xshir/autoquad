@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 """
-
 set_attitude_target.py: (Copter Only)
 
 This example shows how to move/direct Copter and send commands
@@ -15,15 +14,29 @@ Tested in Python 2.7.10
 
 """
 
-from dronekit import connect, VehicleMode
+from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 import time
 import math
+import sys
 from lidar import read_tfluna_data
 
-# Connection string for your actual drone
-serial_port = '/dev/ttyACM0'
-baud_rate = 9600
-connection_string = "{}:{}".format(serial_port, baud_rate)
+# Connection string for your actual drone or SITL
+use_sitl = True  # Set this to True to use SITL, False to connect to a real drone
+
+if use_sitl:
+    from dronekit_sitl import SITL
+
+    sitl = SITL()
+    sitl.download('copter', '3.3', verbose=True)
+    sitl_args = ['-I0', '--model', 'quad', '--home=-35.363261,149.165230,584,353']
+
+    sitl.launch(sitl_args, await_ready=True, restart=True)
+    connection_string = sitl.connection_string()
+else:
+    # Connection string for your actual drone
+    serial_port = '/dev/ttyACM0'
+    baud_rate = 9600
+    connection_string = "{}:{}".format(serial_port, baud_rate)
 
 # Connect to the Vehicle
 print('Connecting to vehicle on: %s' % connection_string)
@@ -60,7 +73,11 @@ def arm_and_takeoff_nogps(aTargetAltitude):
 
     thrust = DEFAULT_TAKEOFF_THRUST
     while True:
-        current_altitude = read_tfluna_data()  # Use your Lidar function to get altitude
+        if use_sitl:
+            current_altitude = vehicle.location.global_relative_frame.alt
+        else:
+            current_altitude = read_tfluna_data()  # Use your Lidar function to get altitude
+
         print(" Altitude: %f  Desired: %f" %
               (current_altitude, aTargetAltitude))
         if current_altitude >= aTargetAltitude * 0.95:  # Trigger just below the target altitude
@@ -141,7 +158,6 @@ def to_quaternion(roll=0.0, pitch=0.0, yaw=0.0):
     z = t1 * t2 * t4 - t0 * t3 * t5
 
     return [w, x, y, z]
-
 
 arm_and_takeoff_nogps(0.3)
 
