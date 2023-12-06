@@ -17,3 +17,7 @@ def read_tfluna_data():
                 temperature = bytes_serial[6] + bytes_serial[7] * 256
                 temperature = (temperature / 8.0) - 256.0
                 return distance / 100.0, temperature, signal_strength  # Return signal strength
+
+if __name__ == "__main__":
+    while 1:
+        print(read_tfluna_data())
