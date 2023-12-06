@@ -21,7 +21,7 @@ import sys
 from lidar import read_tfluna_data
 
 # Connection string for your actual drone or SITL
-use_sitl = True  # Set this to True to use SITL, False to connect to a real drone
+use_sitl = False  # Set this to True to use SITL, False to connect to a real drone
 
 if use_sitl:
     from dronekit_sitl import SITL
