@@ -136,7 +136,7 @@ class AutonomousQuadcopter:
             print(f"Vehicle is armed: {self.vehicle.armed} on takeoff!")
 
         if result_of_takeoff > 0: # successful takeoff since rpm is not 0 indicating no takeoff failure.
-            self.altitude_control(result_of_takeoff.takeoff_throttle)
+            self.altitude_control(result_of_takeoff)
             #self.roll(takeoff_rpm, 'right', 1, 50)
             # Landing phase
             self.vehicle.mode = VehicleMode("LAND")
