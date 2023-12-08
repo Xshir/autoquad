@@ -11,6 +11,7 @@ class AutonomousQuadcopter:
 
     def takeoff(self, rpm, target_altitude):
         self.vehicle.mode = VehicleMode("ALT_HOLD")
+        self.target_altitude = target_altitude
         takeoff_throttle = rpm
         start_time = time.time()  # Record the start time
         reached_target_altitude = False
@@ -70,8 +71,40 @@ class AutonomousQuadcopter:
         time.sleep(duration)
 
         self.vehicle.channels.overrides['1'] = takeoff_rpm # Docs say value can be
-        
-        
+
+
+    def altitude_control(self, takeoff_throttle):
+        """
+        Adjusts the throttle to maintain the target altitude and hovers for 3 seconds.
+        """
+        hover_duration = 3  # seconds
+        start_hover_time = time.time()
+
+        while self.vehicle.armed:
+            distance, temp, signal_strength = read_tfluna_data()
+            self.current_altitude = distance
+
+            if self.current_altitude > self.target_altitude * 0.90:
+                takeoff_throttle -= 20
+            else:
+                takeoff_throttle += 20
+
+            takeoff_throttle = max(1000, min(1900, takeoff_throttle))  # Ensure throttle is within valid range
+            self.vehicle.channels.overrides['3'] = int(takeoff_throttle)
+            print(f"[ALTITUDE CONTROL] Adjusting throttle to maintain altitude: {self.current_altitude} meters")
+
+            time.sleep(0.25)
+
+            # Check if the hover duration has been reached
+            if time.time() - start_hover_time >= hover_duration:
+                print("[ALTITUDE CONTROL] Hover duration reached. Exiting altitude control.")
+                break
+
+        print("[ALTITUDE CONTROL] Exiting altitude control.")
+
+
+
+
     
 
     def basic_mission(self, target_altitude):
@@ -97,13 +130,14 @@ class AutonomousQuadcopter:
         print("[PROGRAM STATUS]: ARM SET | ARM COMPLETE")
         print("[PROGRAM STATUS]: TAKEOFF")
         if self.vehicle.armed:
-            result_of_takeoff = self.takeoff(1300, 1)
+            result_of_takeoff = self.takeoff(1300, target_altitude)
             print(f"Vehicle is armed: {self.vehicle.armed} on takeoff!")
         elif not self.vehicle.armed:
             print(f"Vehicle is armed: {self.vehicle.armed} on takeoff!")
 
         if result_of_takeoff > 0: # successful takeoff since rpm is not 0 indicating no takeoff failure.
+            self.altitude_control(result_of_takeoff.takeoff_throttle)
             #self.roll(takeoff_rpm, 'right', 1, 50)
-            # Landing phase6
+            # Landing phase
             self.vehicle.mode = VehicleMode("LAND")
             print("[Quadcopter] Landing Now.")

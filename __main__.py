@@ -1,6 +1,6 @@
 from dronekit import connect, VehicleMode
 from wings import AutonomousQuadcopter
-from webapp.app import run_webapp
+#from webapp.app import run_webapp
 import time
 import threading
 
