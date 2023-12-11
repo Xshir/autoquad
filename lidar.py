@@ -1,7 +1,7 @@
 import serial
 import time
 
-ser = serial.Serial("/dev/serial0", 115200, timeout=0)
+ser = serial.Serial("/dev/ttyAMA0", 115200, timeout=0)
 
 def read_tfluna_data():
     while True:
