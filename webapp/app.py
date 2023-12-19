@@ -79,4 +79,4 @@ def takeoff():
 
 
 if __name__ == '__main__':
-    app.run(host='192.168.0.46', port=5000)
+    app.run(host='192.168.0.194', port=5000)
