@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Video Stream</title>
     <style>
@@ -34,13 +35,13 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            margin-top: 0px; /* Adjusted margin */
+            margin-top: 0px;
             width: 100%;
         }
 
         .table-container {
-            border: 1px solid white; /* Add a border around the table */
-            height: 480px; /* Set the height to match the video feed */
+            border: 1px solid white;
+            height: 480px;
             overflow-y: scroll;
         }
 
@@ -49,7 +50,8 @@
             width: 100%;
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid white;
             padding: 8px;
             text-align: left;
@@ -89,6 +91,7 @@
         }
     </style>
 </head>
+
 <body>
     <h1 style="margin: 20px;">Autonomous Warehouse QuadCopter Dashboard</h1>
     <div id="video-container">
@@ -114,23 +117,10 @@
     <div class="button-container">
         <div class="button" onclick="refreshPage()">Refresh Page</div>
         <a href="{{ url_for('download_csv') }}" class="button" download="scanned_items.csv">Download CSV</a>
+        <div class="button" onclick="takeoff()" style="cursor: pointer;">Takeoff</div>
     </div>
-    <div class="button" onclick="takeoff()">Takeoff</div>
-    <script>
 
-        function takeoff() {
-            fetch("/takeoff")
-                .then(response => {
-                    if (response.ok) {
-                        console.log("Takeoff command sent successfully!");
-                    } else {
-                        console.error("Failed to send takeoff command.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error sending takeoff command:", error);
-                });
-        }
+    <script>
         // Function to update the table with scanned items
         function updateScannedItems() {
             fetch("/get_scanned_items")
@@ -158,6 +148,21 @@
             location.reload();
         }
 
+        // Function to initiate takeoff
+        function takeoff() {
+            fetch("/takeoff", { method: "POST" })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("Takeoff command sent successfully!");
+                    } else {
+                        console.error("Failed to send takeoff command.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error sending takeoff command:", error);
+                });
+        }
+
         // Initial update
         updateScannedItems();
 
@@ -165,4 +170,5 @@
         refreshTable();
     </script>
 </body>
+
 </html>
