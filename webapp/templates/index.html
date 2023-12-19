@@ -115,8 +115,22 @@
         <div class="button" onclick="refreshPage()">Refresh Page</div>
         <a href="{{ url_for('download_csv') }}" class="button" download="scanned_items.csv">Download CSV</a>
     </div>
-
+    <div class="button" onclick="takeoff()">Takeoff</div>
     <script>
+
+        function takeoff() {
+            fetch("/takeoff")
+                .then(response => {
+                    if (response.ok) {
+                        console.log("Takeoff command sent successfully!");
+                    } else {
+                        console.error("Failed to send takeoff command.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error sending takeoff command:", error);
+                });
+        }
         // Function to update the table with scanned items
         function updateScannedItems() {
             fetch("/get_scanned_items")

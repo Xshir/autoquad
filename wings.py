@@ -93,7 +93,7 @@ class AutonomousQuadcopter:
             self.vehicle.channels.overrides['3'] = int(takeoff_throttle)
             print(f"[ALTITUDE CONTROL] Adjusting throttle to maintain altitude: {self.current_altitude} meters")
 
-            time.sleep(0.25)
+            time.sleep(0.05) # was 0.25
 
             # Check if the hover duration has been reached
             if time.time() - start_hover_time >= hover_duration:
@@ -102,10 +102,6 @@ class AutonomousQuadcopter:
 
         print("[ALTITUDE CONTROL] Exiting altitude control.")
 
-
-
-
-    
 
     def basic_mission(self, target_altitude):
         """

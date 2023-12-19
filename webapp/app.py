@@ -1,8 +1,8 @@
-import cv2
+import cv2, csv
 from flask import Flask, render_template, Response, send_from_directory, jsonify
-from pyzbar.pyzbar import decode
-from pyzbar.pyzbar import ZBarSymbol
-import csv
+import zxingcpp
+from wings import AutonomousQuadcopter
+import traceback
 
 app = Flask(__name__)
 
@@ -11,33 +11,23 @@ scanned_items = []
 cap = cv2.VideoCapture(0)
 
 def generate_frames():
-    supported_symbols = [ZBarSymbol.CODE128, ZBarSymbol.QRCODE]
-
     while True:
         ret, frame = cap.read()
 
         if not ret:
             break
 
-        decoded_objects = decode(frame, symbols=supported_symbols)
+        # Convert the frame to grayscale for zxingcpp
+        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        if decoded_objects:
-            for object_ in decoded_objects:
-                returned_text = object_.data.decode('utf-8')
-                object_type = object_.type
+        # Perform barcode scanning
+        results = zxingcpp.read_barcodes(gray_frame)
 
-                try:
-                    # Split the scanned data into LABEL and DESCRIPTION
-                    parts = returned_text.split(':')
-                    if len(parts) == 2:
-                        label = parts[0]
-                        description = parts[1]
-                    else:
-                        label = returned_text
-                        description = "NIL"  # Set to NIL if not in the format "LABEL:DESCRIPTION"
-                except ValueError:
-                    label = "Non-text Data"
-                    description = "Unknown Type"
+        if results:
+            for result in results:
+                returned_text = result.text
+                label = returned_text
+                description = "NIL"  # Set to NIL if not in the format "LABEL:DESCRIPTION"
 
                 if label not in [item['label'] for item in scanned_items]:
                     scanned_items.append({'label': label, 'description': description})
@@ -71,7 +61,22 @@ def download_csv():
 def get_scanned_items():
     return jsonify(scanned_items)
 
-def run_webapp(): 
-    app.run(host='192.168.0.46', port=5000) # change host to hostname -I output for rpi linux distros
+vehicle = AutonomousQuadcopter()
 
-run_webapp()
+@app.route('/takeoff', methods=['POST'])
+def takeoff():
+    try:
+        target_altitude = 0.3
+        vehicle.basic_mission(target_altitude)
+        return jsonify({"status": "success", "message": "Takeoff initiated."})
+    except Exception as e:
+        print(f"An error occurred in the mission: {e}")
+        print(traceback.extract_tb())
+        return jsonify({"status": "error", "message": f"Failed to initiate takeoff: {str(e)}"})
+    finally:
+        print("Closing the connection.")
+        vehicle.vehicle.close()
+
+
+if __name__ == '__main__':
+    app.run(host='192.168.0.46', port=5000)
