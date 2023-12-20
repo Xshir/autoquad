@@ -3,6 +3,7 @@ from flask import Flask, render_template, Response, send_from_directory, jsonify
 import zxingcpp
 from wings import AutonomousQuadcopter
 import traceback
+import socket
 
 app = Flask(__name__)
 
@@ -10,6 +11,23 @@ scanned_items = []
 cap = cv2.VideoCapture(0)
 vehicle = AutonomousQuadcopter()
 
+def get_ip_address():
+    try:
+        # Create a socket object to get the local machine's IP address
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))  # Connect to a known external server (Google's public DNS)
+
+        # Get the local IP address
+        ip_address = s.getsockname()[0]
+
+        # Close the socket
+        s.close()
+
+        return ip_address
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+    
 def generate_frames():
     while True:
         ret, frame = cap.read()
@@ -79,4 +97,5 @@ def takeoff():
 
 
 if __name__ == '__main__':
-    app.run(host='192.168.0.194', port=5000)
+    wlan_ip = get_ip_address()
+    app.run(host=wlan_ip, port=5000)
