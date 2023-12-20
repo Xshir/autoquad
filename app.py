@@ -4,6 +4,7 @@ import zxingcpp
 from wings import AutonomousQuadcopter
 import traceback
 import socket
+from lidar import read_tfluna_data
 
 app = Flask(__name__)
 
@@ -103,7 +104,7 @@ def takeoff():
 
 @app.route('/get_lidar_data')
 def get_lidar_data():
-    distance, temperature, signal_strength = vehicle.current_altitude
+    distance, temperature, signal_strength = read_tfluna_data()
     return jsonify({"distance": distance, "temperature": temperature, "signal_strength": signal_strength})
 
 @app.route('/get_armed_status')
