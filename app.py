@@ -98,9 +98,9 @@ def takeoff():
         print(f"An error occurred in the mission: {e}")
         print(traceback.extract_tb())
         return jsonify({"status": "error", "message": f"Failed to initiate takeoff: {str(e)}"})
-    finally:
-        print("Closing the connection.")
-        vehicle.vehicle.close()
+    # finally:
+    #     print("Closing the connection.")
+    #     vehicle.vehicle.close()
 
 @app.route('/get_lidar_data')
 def get_lidar_data():
