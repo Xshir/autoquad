@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Video Stream</title>
+    <style>
+        body {
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            margin: 0;
+            align-items: center;
+            text-align: center;
+        }
+
+        #video-container {
+            display: flex;
+            width: 100%;
+        }
+
+        #video-feed {
+            border: 1px solid white;
+            width: 640px;
+            height: 480px;
+        }
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #scanned-items {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-top: 0px;
+            width: 100%;
+        }
+
+        .table-container {
+            border: 1px solid white;
+            height: 480px;
+            overflow-y: scroll;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid white;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #333;
+            color: white;
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:nth-child(even) {
+            background-color: #555;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #444;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .button {
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border: 1px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="margin: 20px;">Autonomous Warehouse QuadCopter Dashboard</h1>
+    <div id="video-container">
+        <img src="{{ url_for('video_feed') }}" id="video-feed">
+        <div id="scanned-items">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>LABEL</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scanned-items-list">
+                        <!-- Scanned items will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="button-container">
+        <div class="button" onclick="refreshPage()">Refresh Page</div>
+        <a href="{{ url_for('download_csv') }}" class="button" download="scanned_items.csv">Download CSV</a>
+        <div class="button" onclick="takeoff()" style="cursor: pointer;">Takeoff</div>
+    </div>
+
+    <script>
+        // Function to update the table with scanned items
+        function updateScannedItems() {
+            fetch("/get_scanned_items")
+                .then(response => response.json())
+                .then(data => {
+                    const scannedItemsList = document.getElementById("scanned-items-list");
+                    scannedItemsList.innerHTML = ""; // Clear the current list
+
+                    data.forEach((item, index) => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `<td>${index + 1}</td><td>${item.label}</td><td>${item.description}</td>`;
+                        scannedItemsList.appendChild(row);
+                    });
+                });
+        }
+
+        // Function to refresh the table periodically (e.g., every 5 seconds)
+        function refreshTable() {
+            updateScannedItems();
+            setTimeout(refreshTable, 5000); // Update every 5 seconds (adjust as needed)
+        }
+
+        // JavaScript function to refresh the page
+        function refreshPage() {
+            location.reload();
+        }
+
+        // Function to initiate takeoff
+        function takeoff() {
+            fetch("/takeoff", { method: "POST" })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("Takeoff command sent successfully!");
+                    } else {
+                        console.error("Failed to send takeoff command.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error sending takeoff command:", error);
+                });
+        }
+
+        // Initial update
+        updateScannedItems();
+
+        // Start periodic updates
+        refreshTable();
+    </script>
+</body>
+
+</html>
