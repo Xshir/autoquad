@@ -126,14 +126,15 @@ class AutonomousQuadcopter:
         print("[PROGRAM STATUS]: ARM SET | ARM COMPLETE")
         print("[PROGRAM STATUS]: TAKEOFF")
         if self.vehicle.armed:
-            result_of_takeoff = self.takeoff(1300, target_altitude)
+            #result_of_takeoff = self.takeoff(1300, target_altitude)
             print(f"Vehicle is armed: {self.vehicle.armed} on takeoff!")
         elif not self.vehicle.armed:
             print(f"Vehicle is armed: {self.vehicle.armed} on takeoff!")
-
-        if result_of_takeoff > 0: # successful takeoff since rpm is not 0 indicating no takeoff failure.
-            self.altitude_control(result_of_takeoff)
+        
+        #uncomment after development of dashboard
+        #if result_of_takeoff > 0: # successful takeoff since rpm is not 0 indicating no takeoff failure.
+            #self.altitude_control(result_of_takeoff)
             #self.roll(takeoff_rpm, 'right', 1, 50)
             # Landing phase
-            self.vehicle.mode = VehicleMode("LAND")
-            print("[Quadcopter] Landing Now.")
+            #self.vehicle.mode = VehicleMode("LAND")
+            #print("[Quadcopter] Landing Now.")
