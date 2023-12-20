@@ -44,8 +44,13 @@ def generate_frames():
         if results:
             for result in results:
                 returned_text = result.text
-                label = returned_text
-                description = "NIL"  # Set to NIL if not in the format "LABEL:DESCRIPTION"
+
+                # Check if the scanned text is in "LABEL:DESCRIPTION" format
+                if ':' in returned_text:
+                    label, description = returned_text.split(':', 1)
+                else:
+                    label = returned_text
+                    description = "NIL"
 
                 if label not in [item['label'] for item in scanned_items]:
                     scanned_items.append({'label': label, 'description': description})
@@ -56,6 +61,7 @@ def generate_frames():
 
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
 
 
 @app.route('/')
@@ -94,6 +100,15 @@ def takeoff():
     finally:
         print("Closing the connection.")
         vehicle.vehicle.close()
+
+@app.route('/get_lidar_data')
+def get_lidar_data():
+    distance, temperature, signal_strength = vehicle.current_altitude
+    return jsonify({"distance": distance, "temperature": temperature, "signal_strength": signal_strength})
+
+@app.route('/get_armed_status')
+def get_armed_status():
+    return jsonify({"armed": vehicle.vehicle.armed})
 
 
 if __name__ == '__main__':

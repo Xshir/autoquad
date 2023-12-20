@@ -114,6 +114,13 @@
         </div>
     </div>
 
+    <!-- Quadcopter Statistics section -->
+    <div id="quadcopter-stats">
+        <h2>Quadcopter Statistics</h2>
+        <div id="lidar-data"></div>
+        <div id="armed-status"></div>
+    </div>
+
     <div class="button-container">
         <div class="button" onclick="refreshPage()">Refresh Page</div>
         <a href="{{ url_for('download_csv') }}" class="button" download="scanned_items.csv">Download CSV</a>
@@ -121,7 +128,7 @@
     </div>
 
     <script>
-        // Function to update the table with scanned items
+        // Function to update the table with scanned items and Quadcopter Statistics
         function updateScannedItems() {
             fetch("/get_scanned_items")
                 .then(response => response.json())
@@ -134,6 +141,22 @@
                         row.innerHTML = `<td>${index + 1}</td><td>${item.label}</td><td>${item.description}</td>`;
                         scannedItemsList.appendChild(row);
                     });
+                });
+
+            // Fetch and update lidar data
+            fetch("/get_lidar_data")
+                .then(response => response.json())
+                .then(data => {
+                    const lidarDataDiv = document.getElementById("lidar-data");
+                    lidarDataDiv.innerHTML = `<p>Distance: ${data.distance} m</p><p>Temperature: ${data.temperature} °C</p>`;
+                });
+
+            // Fetch and update armed status
+            fetch("/get_armed_status")
+                .then(response => response.json())
+                .then(data => {
+                    const armedStatusDiv = document.getElementById("armed-status");
+                    armedStatusDiv.innerHTML = `<p>Armed: ${data.armed ? "Yes" : "No"}</p>`;
                 });
         }
 
