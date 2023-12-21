@@ -159,18 +159,18 @@
                     armedStatusDiv.innerHTML = `<p>Armed: ${data.armed ? "Yes" : "No"}</p>`;
                 });
         }
-
         // Function to refresh the table periodically (e.g., every 5 seconds)
         function refreshTable() {
             updateScannedItems();
-            setTimeout(refreshTable, 5000); // Update every 5 seconds (adjust as needed)
         }
+
+        // Set up regular updates using setInterval
+        setInterval(refreshTable, 250); // Update every 5 seconds (adjust as needed)
 
         // JavaScript function to refresh the page
         function refreshPage() {
             location.reload();
         }
-
         // Function to initiate takeoff
         function takeoff() {
             fetch("/takeoff", { method: "POST" })
