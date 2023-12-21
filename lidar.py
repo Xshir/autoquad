@@ -2,8 +2,11 @@ import serial
 import time
 
 ser = serial.Serial("/dev/ttyAMA0", 115200, timeout=0)
+if ser.isOpen() == False:
+    ser.open() # open serial port if not open
 
 def read_tfluna_data():
+    
     while True:
         counter = ser.in_waiting # count the number of bytes of the serial port
         if counter > 8:
@@ -18,12 +21,8 @@ def read_tfluna_data():
                 return distance/100.0,strength,temperature
 
 if __name__ == "__main__":
-    if ser.isOpen() == False:
-        ser.open() # open serial port if not open
+
     while True:
         print(read_tfluna_data())
 
 
-if __name__ == "__main__":
-    while 1:
-        print(read_tfluna_data())
