@@ -86,8 +86,6 @@ def download_csv():
 def get_scanned_items():
     return jsonify(scanned_items)
 
-
-
 @app.route('/takeoff', methods=['POST'])
 def takeoff():
     try:
@@ -104,8 +102,11 @@ def takeoff():
 
 @app.route('/get_lidar_data')
 def get_lidar_data():
-    distance, temperature, signal_strength = read_tfluna_data()
-    return jsonify({"distance": distance, "temperature": temperature, "signal_strength": signal_strength})
+    try:
+        distance, temperature, signal_strength = read_tfluna_data()
+        return jsonify({"distance": distance, "temperature": temperature, "signal_strength": signal_strength})
+    except:
+        return jsonify({"distance": "FAULT", "temperature": "FAULT", "signal_strength": "FAULT"})
 
 @app.route('/get_armed_status')
 def get_armed_status():
