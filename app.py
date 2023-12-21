@@ -5,6 +5,8 @@ from wings import AutonomousQuadcopter
 import traceback
 import socket
 from lidar import read_tfluna_data
+import serial
+import time
 
 app = Flask(__name__)
 
@@ -28,7 +30,7 @@ def get_ip_address():
     except Exception as e:
         print(f"Error: {e}")
         return None
-    
+
 def generate_frames():
     while True:
         ret, frame = cap.read()
@@ -100,13 +102,19 @@ def takeoff():
     #     print("Closing the connection.")
     #     vehicle.vehicle.close()
 
+ser = serial.Serial("/dev/serial0", 115200, timeout=0)
+ser.baudrate = 115200  # Set baud rate explicitly
+time.sleep(2)
+
 @app.route('/get_lidar_data')
 def get_lidar_data():
     try:
-        distance, temperature, signal_strength = read_tfluna_data()
+        # Pass the instantiated serial port to read_tfluna_data
+        distance, temperature, signal_strength = read_tfluna_data(ser)
         return jsonify({"distance": distance, "temperature": temperature, "signal_strength": signal_strength})
-    except:
-        return jsonify({"distance": "FAULT", "temperature": "FAULT", "signal_strength": "FAULT"})
+    except Exception as e:
+        print(f"Error in get_lidar_data: {e}")
+        return jsonify({"error": "Failed to get lidar data"})
 
 @app.route('/get_armed_status')
 def get_armed_status():
