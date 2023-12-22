@@ -19,7 +19,7 @@ class AutonomousQuadcopter:
         while True:
             self.vehicle.channels.overrides['3'] = int(takeoff_throttle)
             time.sleep(0.2)  # Wait for stability
-            distance, temp, signal_strength = read_tfluna_data(self.lidar_serial_objec)
+            distance, temp, signal_strength = read_tfluna_data(self.lidar_serial_object)
             self.current_altitude = distance
             current_altitude = distance
 
