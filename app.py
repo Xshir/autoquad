@@ -104,6 +104,7 @@ def takeoff():
 
 ser = serial.Serial("/dev/serial0", 115200, timeout=0)
 ser.baudrate = 115200  # Set baud rate explicitly
+vehicle.lidar_serial_object = ser
 time.sleep(2)
 
 @app.route('/get_lidar_data')
