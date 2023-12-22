@@ -81,13 +81,15 @@ class AutonomousQuadcopter:
         start_hover_time = time.time()
 
         while self.vehicle.armed:
-            distance, temp, signal_strength = read_tfluna_data()
+            distance, temp, signal_strength = read_tfluna_data(self.lidar_serial_object)
             self.current_altitude = distance
 
-            if self.current_altitude > self.target_altitude * 0.90:
+            if self.current_altitude > self.target_altitude * 0.95:
                 takeoff_throttle -= 20
+                print(f"ALTITUDE LOGGER: MINUS 20 -> NOW {takeoff_throttle}")
             else:
                 takeoff_throttle += 20
+                print(f"ALTITUDE LOGGER: PLUS 20 -> NOW {takeoff_throttle}")
 
             takeoff_throttle = max(1000, min(1900, takeoff_throttle))  # Ensure throttle is within valid range
             self.vehicle.channels.overrides['3'] = int(takeoff_throttle)
@@ -126,7 +128,7 @@ class AutonomousQuadcopter:
         print("[PROGRAM STATUS]: ARM SET | ARM COMPLETE")
         print("[PROGRAM STATUS]: TAKEOFF")
         if self.vehicle.armed:
-            result_of_takeoff = self.takeoff(1300, target_altitude)
+            result_of_takeoff = self.takeoff(takeoff_rpm, target_altitude)
             print(f"Vehicle is armed: {self.vehicle.armed} on takeoff!")
         elif not self.vehicle.armed:
             print(f"Vehicle is armed: {self.vehicle.armed} on takeoff!")
