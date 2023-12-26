@@ -1,3 +1,5 @@
+<!-- index.html -->
+
 <!DOCTYPE html>
 <html>
 
@@ -104,6 +106,7 @@
                             <th>No.</th>
                             <th>LABEL</th>
                             <th>Description</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="scanned-items-list">
@@ -138,7 +141,7 @@
 
                     data.forEach((item, index) => {
                         const row = document.createElement("tr");
-                        row.innerHTML = `<td>${index + 1}</td><td>${item.label}</td><td>${item.description}</td>`;
+                        row.innerHTML = `<td>${index + 1}</td><td>${item.label}</td><td>${item.description}</td><td><button onclick="removeItem(${index})">Remove</button></td>`;
                         scannedItemsList.appendChild(row);
                     });
                 });
@@ -159,18 +162,42 @@
                     armedStatusDiv.innerHTML = `<p>Armed: ${data.armed ? "Yes" : "No"}</p>`;
                 });
         }
+
+        // Function to remove a scanned item
+        function removeItem(index) {
+            fetch("/remove_scanned_item", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ index: index }),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("Scanned item removed successfully!");
+                        updateScannedItems();
+                    } else {
+                        console.error("Failed to remove scanned item.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error removing scanned item:", error);
+                });
+        }
+
         // Function to refresh the table periodically (e.g., every 5 seconds)
         function refreshTable() {
             updateScannedItems();
         }
 
         // Set up regular updates using setInterval
-        setInterval(refreshTable, 100); // Update every 5 seconds (adjust as needed)
+        setInterval(refreshTable, 5000); // Update every 5 seconds (adjust as needed)
 
         // JavaScript function to refresh the page
         function refreshPage() {
             location.reload();
         }
+
         // Function to initiate takeoff
         function takeoff() {
             fetch("/takeoff", { method: "POST" })

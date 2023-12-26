@@ -1,5 +1,5 @@
 import cv2, csv
-from flask import Flask, render_template, Response, send_from_directory, jsonify
+from flask import Flask, render_template, Response, send_from_directory, jsonify, request
 import zxingcpp
 from wings import AutonomousQuadcopter
 import traceback
@@ -13,6 +13,11 @@ app = Flask(__name__)
 scanned_items = []
 cap = cv2.VideoCapture(0)
 vehicle = AutonomousQuadcopter()
+
+ser = serial.Serial("/dev/serial0", 115200, timeout=0)
+ser.baudrate = 115200  # Set baud rate explicitly
+vehicle.lidar_serial_object = ser
+time.sleep(2)
 
 def get_ip_address():
     try:
@@ -98,14 +103,6 @@ def takeoff():
         print(f"An error occurred in the mission: {e}")
         print(traceback.extract_tb())
         return jsonify({"status": "error", "message": f"Failed to initiate takeoff: {str(e)}"})
-    # finally:
-    #     print("Closing the connection.")
-    #     vehicle.vehicle.close()
-
-ser = serial.Serial("/dev/serial0", 115200, timeout=0)
-ser.baudrate = 115200  # Set baud rate explicitly
-vehicle.lidar_serial_object = ser
-time.sleep(2)
 
 @app.route('/get_lidar_data')
 def get_lidar_data():
@@ -120,6 +117,24 @@ def get_lidar_data():
 @app.route('/get_armed_status')
 def get_armed_status():
     return jsonify({"armed": vehicle.vehicle.armed})
+
+@app.route('/remove_scanned_item', methods=['POST'])
+def remove_scanned_item():
+    try:
+        data = request.get_json()
+        index = data.get('index')
+
+        if index is not None and 0 <= index < len(scanned_items):
+            removed_item = scanned_items.pop(index)
+            print(f"Removed item: {removed_item}")
+            return jsonify({"status": "success", "message": "Scanned item removed successfully."})
+        else:
+            return jsonify({"status": "error", "message": "Invalid index for removal."})
+
+    except Exception as e:
+        print(f"Error in remove_scanned_item: {e}")
+        return jsonify({"status": "error", "message": "Failed to remove scanned item."})
+
 
 
 if __name__ == '__main__':
