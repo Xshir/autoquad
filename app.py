@@ -7,6 +7,9 @@ import socket
 from lidar import read_tfluna_data
 import serial
 import time
+import fcntl
+import struct
+
 
 app = Flask(__name__)
 
@@ -19,17 +22,13 @@ ser.baudrate = 115200  # Set baud rate explicitly
 vehicle.lidar_serial_object = ser
 time.sleep(2)
 
-def get_ip_address():
+def get_ip_address(interface='wlan0'):
     try:
         # Create a socket object to get the local machine's IP address
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))  # Connect to a known external server (Google's public DNS)
-
-        # Get the local IP address
-        ip_address = s.getsockname()[0]
-
-        # Close the socket
-        s.close()
+        
+        # Get the IP address of the specified network interface (e.g., wlan0)
+        ip_address = socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(interface[:15], 'utf-8')))[20:24])
 
         return ip_address
     except Exception as e:
