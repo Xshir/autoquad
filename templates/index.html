@@ -110,6 +110,41 @@
             flex: 1;
             margin: 0;
         }
+
+        #attitude-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #attitude-indicator p {
+            margin: 0;
+        }
+
+        #pitch-roll-yaw-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        #pitch,
+        #roll,
+        #yaw {
+            flex: 1;
+            text-align: center;
+        }
+
+        #pitch {
+            transform: rotateX(${data.pitch}deg);
+        }
+
+        #roll {
+            transform: rotateY(${data.roll}deg);
+        }
+
+        #yaw {
+            transform: rotateZ(${data.yaw}deg);
+        }
     </style>
 </head>
 
@@ -142,6 +177,14 @@
         <div id="lidar-data"></div>
         <div id="drone-stats"></div>
         <div id="armed-status"></div>
+        <div id="attitude-indicator">
+            <p>Attitude Indicator</p>
+            <div id="pitch-roll-yaw-container">
+                <p id="pitch">Pitch</p>
+                <p id="roll">Roll</p>
+                <p id="yaw">Yaw</p>
+            </div>
+        </div>
     </div>
 
     <div class="button-container">
