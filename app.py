@@ -127,7 +127,7 @@ def get_lidar_data():
     try:
         # Pass the instantiated serial port to read_tfluna_data
         distance, signal_strength, temperature = read_tfluna_data(ser)
-        batt_level = vehicle.vehicle.battery.level
+        batt_level = f"{vehicle.vehicle.battery.level} %"
         if vehicle.vehicle.battery.level is None:
             batt_level = "Information Unavailable"
 
