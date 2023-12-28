@@ -45,8 +45,9 @@ class RawIMU(object):
 
 class AutonomousQuadcopter:
 
-    def __init__(self):
+    def __init__(self, *args):
         serial_port = '/dev/ttyACM0'; baud_rate = 9600
+        super(AutonomousQuadcopter, self).__init__(*args)
         self.vehicle = connect(serial_port, baud=baud_rate)
         self.current_altitude = 0
         self._raw_imu = RawIMU()
