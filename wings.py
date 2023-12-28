@@ -53,11 +53,11 @@ class AutonomousQuadcopter(Vehicle):
     def __init__(self, *args):
         serial_port = '/dev/ttyACM0'; baud_rate = 9600
         super(AutonomousQuadcopter, self).__init__(*args)
-        self.vehicle = connect(serial_port, baud=baud_rate)
+        self.vehicle = connect(serial_port, baud=baud_rate, vehicle_class=self)
         self.current_altitude = 0
         self._raw_imu = RawIMU()
         self.add_attribute_listener('raw_imu', raw_imu_callback)
-        
+
         @self.on_message('RAW_IMU')
         def listener(self, name, message):
             """
