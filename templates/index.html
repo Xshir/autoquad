@@ -117,33 +117,47 @@
             align-items: center;
         }
 
-        #attitude-indicator p {
-            margin: 0;
-        }
-
         #pitch-roll-yaw-container {
             display: flex;
-            justify-content: space-between;
-            width: 100%;
+            margin-bottom: 10px;
         }
 
-        #pitch,
-        #roll,
-        #yaw {
+        .attitude-label {
             flex: 1;
             text-align: center;
         }
 
-        #pitch {
-            transform: rotateX(${data.pitch}deg);
+        .attitude-value {
+            flex: 1;
+            text-align: center;
         }
 
-        #roll {
-            transform: rotateY(${data.roll}deg);
+        #attitude-display {
+            width: 200px;
+            height: 200px;
+            border: 2px solid white;
+            position: relative;
+            margin: 10px auto;
         }
 
-        #yaw {
-            transform: rotateZ(${data.yaw}deg);
+        .horizon {
+            width: 100%;
+            height: 2px;
+            background-color: white;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .aircraft {
+            width: 20px;
+            height: 20px;
+            background-color: #3498db; /* Blue color for the aircraft */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: center bottom;
+            transform: translate(-50%, -50%) rotate(0deg);
         }
     </style>
 </head>
@@ -180,9 +194,16 @@
         <div id="attitude-indicator">
             <p>Attitude Indicator</p>
             <div id="pitch-roll-yaw-container">
-                <p id="pitch">Pitch</p>
-                <p id="roll">Roll</p>
-                <p id="yaw">Yaw</p>
+                <div class="attitude-label">Pitch</div>
+                <div class="attitude-value" id="pitch-value">0°</div>
+                <div class="attitude-label">Roll</div>
+                <div class="attitude-value" id="roll-value">0°</div>
+                <div class="attitude-label">Yaw</div>
+                <div class="attitude-value" id="yaw-value">0°</div>
+            </div>
+            <div id="attitude-display">
+                <div class="horizon"></div>
+                <div class="aircraft" id="aircraft"></div>
             </div>
         </div>
     </div>
@@ -219,10 +240,17 @@
                          <p>Temperature: ${data.temperature} °C</p>
                          <p>Battery Voltage: ${data.battery_voltage} V</p>
                          <p>Battery Level: ${data.battery_level}</p>
-                         <p>Pitch: ${data.pitch} °</p>
-                         <p>Roll: ${data.roll} °</p>
-                         <p>Yaw: ${data.yaw} °</p>`;
+                         <p>Pitch: ${data.pitch.toFixed(2)} °</p>
+                         <p>Roll: ${data.roll.toFixed(2)} °</p>
+                         <p>Yaw: ${data.yaw.toFixed(2)} °</p>`;
 
+                    // Update attitude indicator values
+                    document.getElementById("pitch-value").textContent = data.pitch.toFixed(2) + '°';
+                    document.getElementById("roll-value").textContent = data.roll.toFixed(2) + '°';
+                    document.getElementById("yaw-value").textContent = data.yaw.toFixed(2) + '°';
+
+                    // Update attitude indicator aircraft rotation
+                    document.getElementById("aircraft").style.transform = `translate(-50%, -50%) rotate(${data.roll}deg)`;
                 });
 
             // Fetch and update armed status
