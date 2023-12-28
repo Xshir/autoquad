@@ -1,4 +1,5 @@
-import cv2, csv
+import cv2
+import csv
 from flask import Flask, render_template, Response, send_from_directory, jsonify, request
 import zxingcpp
 from wings import AutonomousQuadcopter
@@ -9,27 +10,36 @@ import serial
 import time
 import fcntl
 import struct
-
+import pyttsx3
 
 app = Flask(__name__)
+known_barcodes = {
+    "350A": 'Airbus A350 XWB "Flying Raccoon"',
+    "380": 'Airbus A380 "SuperJumbo"',
+    "777": 'Boeing 777 "Cripple Seven"',
+    "787DL": 'Boeing 787 DreamLiner "TupperJet"'
+}
 
 scanned_items = []
 cap = cv2.VideoCapture(0)
 vehicle = AutonomousQuadcopter()
 
-ser = serial.Serial("/dev/serial0", 115200, timeout=0)
-ser.baudrate = 115200  # Set baud rate explicitly
+ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=0)
+ser.baudrate = 115200
 vehicle.lidar_serial_object = ser
 time.sleep(2)
 
+def text_to_speech(text, rate=100):
+    engine = pyttsx3.init()
+    engine.setProperty('rate', rate)
+    engine.say(text)
+    engine.runAndWait()
+
 def get_ip_address(interface='wlan0'):
     try:
-        # Create a socket object to get the local machine's IP address
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        
-        # Get the IP address of the specified network interface (e.g., wlan0)
-        ip_address = socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(interface[:15], 'utf-8')))[20:24])
-
+        ip_address = socket.inet_ntoa(
+            fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(interface[:15], 'utf-8')))[20:24])
         return ip_address
     except Exception as e:
         print(f"Error: {e}")
@@ -42,34 +52,29 @@ def generate_frames():
         if not ret:
             break
 
-        # Convert the frame to grayscale for zxingcpp
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # Perform barcode scanning
         results = zxingcpp.read_barcodes(gray_frame)
 
         if results:
             for result in results:
                 returned_text = result.text
 
-                # Check if the scanned text is in "LABEL:DESCRIPTION" format
                 if ':' in returned_text:
                     label, description = returned_text.split(':', 1)
                 else:
                     label = returned_text
-                    description = "NIL"
+                    description = known_barcodes.get(str(label), "Unknown")
 
                 if label not in [item['label'] for item in scanned_items]:
                     scanned_items.append({'label': label, 'description': description})
-                    print(f"Scanned data: {label}, Type: {description}")  # Print the type of data to the terminal
+                    print(f"Scanned data: {label}, Type: {description}")
 
         _, buffer = cv2.imencode('.jpg', frame)
         frame_bytes = buffer.tobytes()
 
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
-
-
 
 @app.route('/')
 def index():
@@ -106,7 +111,6 @@ def takeoff():
 @app.route('/get_lidar_data')
 def get_lidar_data():
     try:
-        # Pass the instantiated serial port to read_tfluna_data
         distance, temperature, signal_strength = read_tfluna_data(ser)
         return jsonify({"distance": distance, "temperature": temperature, "signal_strength": signal_strength})
     except Exception as e:
@@ -134,7 +138,15 @@ def remove_scanned_item():
         print(f"Error in remove_scanned_item: {e}")
         return jsonify({"status": "error", "message": "Failed to remove scanned item."})
 
-
+@app.route('/get_drone_statistics')
+def get_drone_statistics():
+    try:
+        magnetic_field = vehicle.magnetometer.magnetic  # Implement this method in AutonomousQuadcopter
+        battery_voltage = vehicle.battery.voltage  # Implement this method in AutonomousQuadcopter
+        return jsonify({"magnetic_field": magnetic_field, "battery_voltage": battery_voltage})
+    except Exception as e:
+        print(f"Error in get_drone_statistics: {e}")
+        return jsonify({"error": "Failed to get drone statistics"})
 
 if __name__ == '__main__':
     wlan_ip = get_ip_address()

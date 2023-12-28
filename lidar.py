@@ -22,7 +22,7 @@ def read_tfluna_data(serial_port):
 if __name__ == "__main__":
     try:
         # Open serial port with explicit baud rate setting
-        with serial.Serial("/dev/serial0", 115200, timeout=0) as ser:
+        with serial.Serial("/dev/ttyUSB0", 115200, timeout=0) as ser:
             # Explicitly set baud rate
             ser.baudrate = 115200
 
