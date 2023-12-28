@@ -119,14 +119,15 @@
         }
 
         #aircraft-wings {
-            width: 100%;
-            height: 5px;
-            background-color: white;
-            position: absolute;
-            top: 50%;
-            transform-origin: 50% 50%;
-            transform: rotate(0deg);
-        }
+        width: 100px; /* Adjust the width as needed */
+        height: 20px; /* Adjust the height as needed */
+        background-color: blue;
+        position: relative; /* Use relative positioning */
+        top: -50px; /* Adjust the top position to move it up */
+        margin: 0 auto; /* Center the indicator horizontally */
+        transform-origin: center; /* Set the rotation origin to the center */
+        transition: transform 0.3s ease; /* Add smooth transition for better visual effect */
+    }
     </style>
 </head>
 
