@@ -24,6 +24,13 @@ scanned_items = []
 cap = cv2.VideoCapture(0)
 vehicle = AutonomousQuadcopter()
 
+def raw_imu_callback(self, attr_name, value):
+    # attr_name == 'raw_imu'
+    # value == vehicle.raw_imu
+    print(value)
+
+vehicle.add_attribute_listener('raw_imu', raw_imu_callback)
+
 ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=0)
 ser.baudrate = 115200
 vehicle.lidar_serial_object = ser
@@ -108,15 +115,6 @@ def takeoff():
         print(traceback.extract_tb())
         return jsonify({"status": "error", "message": f"Failed to initiate takeoff: {str(e)}"})
 
-@app.route('/get_lidar_data')
-def get_lidar_data():
-    try:
-        distance, temperature, signal_strength = read_tfluna_data(ser)
-        return jsonify({"distance": distance, "temperature": temperature, "signal_strength": signal_strength})
-    except Exception as e:
-        print(f"Error in get_lidar_data: {e}")
-        return jsonify({"error": "Failed to get lidar data"})
-
 @app.route('/get_armed_status')
 def get_armed_status():
     return jsonify({"armed": vehicle.vehicle.armed})
@@ -142,7 +140,7 @@ def remove_scanned_item():
 def get_drone_statistics():
     try:
         distance, temperature, signal_strength = read_tfluna_data(ser)
-        magnetic_field = vehicle.ekf3.mag  # Implement this method in AutonomousQuadcopter
+        magnetic_field = vehicle.raw_imu  # Implement this method in AutonomousQuadcopter
         battery_voltage = vehicle.battery.voltage  # Implement this method in AutonomousQuadcopter
         return jsonify({"magnetic_field": magnetic_field, "battery_voltage": battery_voltage, "distance": distance, "temperature": temperature, "signal_strength": signal_strength})
     except Exception as e:
