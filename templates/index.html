@@ -110,27 +110,6 @@
             flex: 1;
             margin: 0;
         }
-
-        /* Attitude Indicator Styles */
-        #attitude-indicator {
-            width: 150px;
-            height: 150px;
-            background-color: #333;
-            border-radius: 50%;
-            position: relative;
-            margin-top: 20px;
-        }
-
-        #aircraft-wings {
-            width: 100%;
-            height: 5px;
-            background-color: #ffcc00;
-            position: absolute;
-            top: 50%;
-            transform-origin: center;
-            transform: translateX(-50%) translateY(-50%) rotate(0deg);
-            transition: transform 0.3s ease;
-        }
     </style>
 </head>
 
@@ -163,11 +142,6 @@
         <div id="lidar-data"></div>
         <div id="drone-stats"></div>
         <div id="armed-status"></div>
-
-        <!-- Attitude Indicator -->
-        <div id="attitude-indicator">
-            <div id="aircraft-wings"></div>
-        </div>
     </div>
 
     <div class="button-container">
@@ -205,10 +179,6 @@
                          <p>Pitch: ${data.pitch} °</p>
                          <p>Roll: ${data.roll} °</p>
                          <p>Yaw: ${data.yaw} °</p>`;
-
-                    // Update attitude indicator
-                    const aircraftWings = document.getElementById("aircraft-wings");
-                    aircraftWings.style.transform = `translateX(-50%) translateY(-50%) rotate(${data.roll}deg)`;
                 });
 
             // Fetch and update armed status
