@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Video Stream</title>
+    <title>Autonomous Warehouse QuadCopter Dashboard</title>
     <style>
         body {
             background-color: black;
@@ -94,8 +94,26 @@
             margin-top: 20px;
         }
 
+        #lidar-data {
+            display: flex;
+            flex-direction: column;
+            max-height: 3em;
+            overflow: hidden;
+        }
+
+        #lidar-data p {
+            margin: 0;
+        }
+
         #drone-stats {
-            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            max-height: 3em;
+            overflow: hidden;
+        }
+
+        #drone-stats p {
+            margin: 0;
         }
     </style>
 </head>
@@ -200,13 +218,13 @@
                 });
         }
 
-        // Function to refresh the table and drone statistics periodically (e.g., every 5 seconds)
+        // Function to refresh the table and drone statistics periodically
         function refreshTable() {
             updateScannedItems();
         }
 
         // Set up regular updates using setInterval
-        setInterval(refreshTable, 50); // Adjust the interval as needed
+        setInterval(refreshTable, 50); // 50 milliseconds
 
         // JavaScript function to refresh the page
         function refreshPage() {
