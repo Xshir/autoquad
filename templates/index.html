@@ -174,7 +174,7 @@
                 .then(response => response.json())
                 .then(data => {
                     const droneStatsDiv = document.getElementById("drone-stats");
-                    droneStatsDiv.innerHTML = `<p>Magnetic Field: ${data.magnetic_field}</p><p>Battery Voltage: ${data.battery_voltage} V</p>`;
+                    droneStatsDiv.innerHTML = `<p>Magnetic Field: ${data.magnetic_field}</p><p>Battery Voltage: ${data.battery_voltage} V</p><p>Battery Level: ${data.battery_level} °C</p>`;
                 });
         }
 
