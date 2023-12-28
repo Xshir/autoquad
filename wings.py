@@ -1,7 +1,7 @@
 from dronekit import connect, VehicleMode
 import time
 from lidar import read_tfluna_data
-
+from dronekit import Vehicle
 
 class RawIMU(object):
     """
@@ -43,7 +43,7 @@ class RawIMU(object):
         return "RAW_IMU: time_boot_us={},xacc={},yacc={},zacc={},xgyro={},ygyro={},zgyro={},xmag={},ymag={},zmag={}".format(self.time_boot_us, self.xacc, self.yacc,self.zacc,self.xgyro,self.ygyro,self.zgyro,self.xmag,self.ymag,self.zmag)
 
 
-class AutonomousQuadcopter:
+class AutonomousQuadcopter(Vehicle):
 
     def __init__(self, *args):
         serial_port = '/dev/ttyACM0'; baud_rate = 9600
