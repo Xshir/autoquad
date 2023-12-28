@@ -94,25 +94,20 @@
             margin-top: 20px;
         }
 
-        #lidar-data {
-            display: flex;
-            flex-direction: column;
-            max-height: 3em;
-            overflow: hidden;
-        }
-
-        #lidar-data p {
-            margin: 0;
-        }
-
+        #lidar-data,
         #drone-stats {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            justify-content: space-between;
             max-height: 3em;
             overflow: hidden;
+            width: 100%;
+            margin-bottom: 10px;
         }
 
+        #lidar-data p,
         #drone-stats p {
+            flex: 1;
             margin: 0;
         }
     </style>
