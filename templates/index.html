@@ -95,7 +95,8 @@
         }
 
         #lidar-data,
-        #drone-stats {
+        #drone-stats,
+        #aircraft {
             display: flex;
             flex-direction: row;
             justify-content: space-between;
@@ -111,45 +112,12 @@
             margin: 0;
         }
 
-        #attitude-display {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            background-color: #111;
-            margin-top: 20px;
-        }
-
-        #attitude-display .horizon {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 50%;
-            border-top: 1px solid white;
-            height: 1px;
-        }
-
-        #attitude-display #aircraft {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 50px;
-            height: 50px;
-            background-color: blue;
+        #aircraft {
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            transform-origin: center bottom;
-            transform: translate(-50%, -50%) rotate(0deg);
-        }
-
-        #attitude-values {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-around;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        #attitude-values p {
-            margin: 0;
+            background-color: #87CEEB; /* Sky Blue */
+            position: relative;
         }
     </style>
 </head>
@@ -182,6 +150,7 @@
         <h2>Quadcopter Statistics</h2>
         <div id="lidar-data"></div>
         <div id="drone-stats"></div>
+        <div id="aircraft"></div>
         <div id="armed-status"></div>
     </div>
 
@@ -189,17 +158,6 @@
         <div class="button" onclick="refreshPage()">Refresh Page</div>
         <a href="{{ url_for('download_csv') }}" class="button" download="scanned_items.csv">Download CSV</a>
         <div class="button" onclick="takeoff()" style="cursor: pointer;">Takeoff</div>
-    </div>
-
-    <div id="attitude-display">
-        <div class="horizon"></div>
-        <div class="aircraft" id="aircraft"></div>
-    </div>
-
-    <div id="attitude-values">
-        <p id="pitch-value">Pitch: 0°</p>
-        <p id="roll-value">Roll: 0°</p>
-        <p id="yaw-value">Yaw: 0°</p>
     </div>
 
     <script>
@@ -228,17 +186,10 @@
                          <p>Temperature: ${data.temperature} °C</p>
                          <p>Battery Voltage: ${data.battery_voltage} V</p>
                          <p>Battery Level: ${data.battery_level}</p>
-                         <p>Pitch: ${data.pitch.toFixed(2)} °</p>
-                         <p>Roll: ${data.roll.toFixed(2)} °</p>
-                         <p>Yaw: ${data.yaw.toFixed(2)} °</p>`;
-
-                    // Update attitude indicator values
-                    document.getElementById("pitch-value").textContent = `Pitch: ${data.pitch.toFixed(2)}°`;
-                    document.getElementById("roll-value").textContent = `Roll: ${data.roll.toFixed(2)}°`;
-                    document.getElementById("yaw-value").textContent = `Yaw: ${data.yaw.toFixed(2)}°`;
-
-                    // Update attitude indicator aircraft rotation
-                    document.getElementById("aircraft").style.transform = `translate(-50%, -50%) rotate(${data.pitch}deg)`;
+                         <p>Pitch: ${data.pitch} °</p>
+                         <p>Roll: ${data.roll} °</p>
+                         <p>Yaw: ${data.yaw} °</p>`;
+                    updateAircraft(data);
                 });
 
             // Fetch and update armed status
@@ -278,6 +229,12 @@
                 .catch(error => {
                     console.error("Error removing scanned item:", error);
                 });
+        }
+
+        // Function to update the aircraft attitude indicator
+        function updateAircraft(data) {
+            const aircraft = document.getElementById("aircraft");
+            aircraft.style.transform = `translate(-50%, -50%) rotateX(${data.pitch}deg) rotateY(${data.roll}deg) rotateZ(${data.yaw}deg)`;
         }
 
         // Function to refresh the table and drone statistics periodically
