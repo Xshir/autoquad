@@ -111,53 +111,45 @@
             margin: 0;
         }
 
-        #attitude-indicator {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #pitch-roll-yaw-container {
-            display: flex;
-            margin-bottom: 10px;
-        }
-
-        .attitude-label {
-            flex: 1;
-            text-align: center;
-        }
-
-        .attitude-value {
-            flex: 1;
-            text-align: center;
-        }
-
         #attitude-display {
+            position: relative;
             width: 200px;
             height: 200px;
-            border: 2px solid white;
-            position: relative;
-            margin: 10px auto;
+            background-color: #111;
+            margin-top: 20px;
         }
 
-        .horizon {
-            width: 100%;
-            height: 2px;
-            background-color: white;
+        #attitude-display .horizon {
             position: absolute;
+            left: 0;
+            right: 0;
             top: 50%;
-            transform: translateY(-50%);
+            border-top: 1px solid white;
+            height: 1px;
         }
 
-        .aircraft {
-            width: 20px;
-            height: 20px;
-            background-color: #3498db; /* Blue color for the aircraft */
+        #attitude-display #aircraft {
             position: absolute;
-            top: 50%;
             left: 50%;
+            top: 50%;
+            width: 50px;
+            height: 50px;
+            background-color: blue;
+            border-radius: 50%;
             transform-origin: center bottom;
             transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        #attitude-values {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        #attitude-values p {
+            margin: 0;
         }
     </style>
 </head>
@@ -191,27 +183,23 @@
         <div id="lidar-data"></div>
         <div id="drone-stats"></div>
         <div id="armed-status"></div>
-        <div id="attitude-indicator">
-            <p>Attitude Indicator</p>
-            <div id="pitch-roll-yaw-container">
-                <div class="attitude-label">Pitch</div>
-                <div class="attitude-value" id="pitch-value">0°</div>
-                <div class="attitude-label">Roll</div>
-                <div class="attitude-value" id="roll-value">0°</div>
-                <div class="attitude-label">Yaw</div>
-                <div class="attitude-value" id="yaw-value">0°</div>
-            </div>
-            <div id="attitude-display">
-                <div class="horizon"></div>
-                <div class="aircraft" id="aircraft"></div>
-            </div>
-        </div>
     </div>
 
     <div class="button-container">
         <div class="button" onclick="refreshPage()">Refresh Page</div>
         <a href="{{ url_for('download_csv') }}" class="button" download="scanned_items.csv">Download CSV</a>
         <div class="button" onclick="takeoff()" style="cursor: pointer;">Takeoff</div>
+    </div>
+
+    <div id="attitude-display">
+        <div class="horizon"></div>
+        <div class="aircraft" id="aircraft"></div>
+    </div>
+
+    <div id="attitude-values">
+        <p id="pitch-value">Pitch: 0°</p>
+        <p id="roll-value">Roll: 0°</p>
+        <p id="yaw-value">Yaw: 0°</p>
     </div>
 
     <script>
@@ -245,12 +233,12 @@
                          <p>Yaw: ${data.yaw.toFixed(2)} °</p>`;
 
                     // Update attitude indicator values
-                    document.getElementById("pitch-value").textContent = data.pitch.toFixed(2) + '°';
-                    document.getElementById("roll-value").textContent = data.roll.toFixed(2) + '°';
-                    document.getElementById("yaw-value").textContent = data.yaw.toFixed(2) + '°';
+                    document.getElementById("pitch-value").textContent = `Pitch: ${data.pitch.toFixed(2)}°`;
+                    document.getElementById("roll-value").textContent = `Roll: ${data.roll.toFixed(2)}°`;
+                    document.getElementById("yaw-value").textContent = `Yaw: ${data.yaw.toFixed(2)}°`;
 
                     // Update attitude indicator aircraft rotation
-                    document.getElementById("aircraft").style.transform = `translate(-50%, -50%) rotate(${data.roll}deg)`;
+                    document.getElementById("aircraft").style.transform = `translate(-50%, -50%) rotate(${data.pitch}deg)`;
                 });
 
             // Fetch and update armed status
