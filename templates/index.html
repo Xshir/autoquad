@@ -95,10 +95,9 @@
         }
 
         #lidar-data,
-        #drone-stats,
-        #aircraft {
+        #drone-stats {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             justify-content: space-between;
             max-height: 5em;
             overflow: hidden;
@@ -108,22 +107,26 @@
 
         #lidar-data p,
         #drone-stats p {
+            flex: 1;
             margin: 0;
         }
 
-        #aircraft {
+        #attitude-indicator {
             width: 100px;
             height: 100px;
             background-color: #87CEEB; /* Sky Blue */
             position: relative;
         }
 
-        #attitude-indicator {
-            flex: 1;
-            background-image: url('attitude_indicator.png'); /* replace with your image */
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
+        #indicator-bubble {
+            width: 20px;
+            height: 20px;
+            background-color: #FFA500; /* Orange */
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
     </style>
 </head>
@@ -156,8 +159,8 @@
         <h2>Quadcopter Statistics</h2>
         <div id="lidar-data"></div>
         <div id="drone-stats"></div>
-        <div id="aircraft">
-            <div id="attitude-indicator"></div>
+        <div id="attitude-indicator">
+            <div id="indicator-bubble"></div>
         </div>
         <div id="armed-status"></div>
     </div>
@@ -197,7 +200,7 @@
                          <p>Pitch: ${data.pitch} °</p>
                          <p>Roll: ${data.roll} °</p>
                          <p>Yaw: ${data.yaw} °</p>`;
-                    updateAircraft(data);
+                    updateAttitudeIndicator(data);
                 });
 
             // Fetch and update armed status
@@ -240,9 +243,9 @@
         }
 
         // Function to update the rotation of the aircraft based on pitch, roll, and yaw
-        function updateAircraft(data) {
-            const aircraft = document.getElementById("attitude-indicator");
-            aircraft.style.transform = `rotateX(${data.pitch}deg) rotateY(${data.roll}deg) rotateZ(${data.yaw}deg)`;
+        function updateAttitudeIndicator(data) {
+            const indicatorBubble = document.getElementById("indicator-bubble");
+            indicatorBubble.style.transform = `rotateX(${data.pitch}deg) rotateY(${data.roll}deg) rotateZ(${data.yaw}deg)`;
         }
 
         // Function to refresh the table and drone statistics periodically
