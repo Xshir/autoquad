@@ -231,7 +231,7 @@
                 });
         }
 
-        // Function to update the aircraft attitude indicator
+        // Function to update the rotation of the aircraft based on pitch, roll, and yaw
         function updateAircraft(data) {
             const aircraft = document.getElementById("aircraft");
             aircraft.style.transform = `translate(-50%, -50%) rotateX(${data.pitch}deg) rotateY(${data.roll}deg) rotateZ(${data.yaw}deg)`;
