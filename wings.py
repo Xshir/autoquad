@@ -42,6 +42,11 @@ class RawIMU(object):
         """
         return "RAW_IMU: time_boot_us={},xacc={},yacc={},zacc={},xgyro={},ygyro={},zgyro={},xmag={},ymag={},zmag={}".format(self.time_boot_us, self.xacc, self.yacc,self.zacc,self.xgyro,self.ygyro,self.zgyro,self.xmag,self.ymag,self.zmag)
 
+def raw_imu_callback(self, attr_name, value):
+    # attr_name == 'raw_imu'
+    # value == vehicle.raw_imu
+    print(value)
+
 
 class AutonomousQuadcopter(Vehicle):
 
@@ -51,7 +56,8 @@ class AutonomousQuadcopter(Vehicle):
         self.vehicle = connect(serial_port, baud=baud_rate)
         self.current_altitude = 0
         self._raw_imu = RawIMU()
-
+        self.add_attribute_listener('raw_imu', raw_imu_callback)
+        
         @self.on_message('RAW_IMU')
         def listener(self, name, message):
             """
