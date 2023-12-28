@@ -141,9 +141,10 @@ def remove_scanned_item():
 @app.route('/get_drone_statistics')
 def get_drone_statistics():
     try:
-        magnetic_field = vehicle.magnetometer.magnetic  # Implement this method in AutonomousQuadcopter
+        distance, temperature, signal_strength = read_tfluna_data(ser)
+        magnetic_field = vehicle.ekf3.mag  # Implement this method in AutonomousQuadcopter
         battery_voltage = vehicle.battery.voltage  # Implement this method in AutonomousQuadcopter
-        return jsonify({"magnetic_field": magnetic_field, "battery_voltage": battery_voltage})
+        return jsonify({"magnetic_field": magnetic_field, "battery_voltage": battery_voltage, "distance": distance, "temperature": temperature, "signal_strength": signal_strength})
     except Exception as e:
         print(f"Error in get_drone_statistics: {e}")
         return jsonify({"error": "Failed to get drone statistics"})
