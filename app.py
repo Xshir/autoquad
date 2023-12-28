@@ -131,7 +131,7 @@ def get_lidar_data():
         if vehicle.vehicle.battery.level is None:
             batt_level = "Information Unavailable"
 
-        return jsonify({"distance": distance, "temperature": temperature, "signal_strength": signal_strength, "battery_voltage": vehicle.vehicle.battery.voltage, "battery_level": batt_level, "pitch": vehicle.vehicle.attitude.pitch, "roll": vehicle.vehicle.attitude.roll, "yaw": vehicle.vehicle.attitude.yaw})
+        return jsonify({"distance": distance, "temperature": temperature, "signal_strength": signal_strength, "battery_voltage": vehicle.vehicle.battery.voltage, "battery_level": batt_level, "pitch": round(vehicle.vehicle.attitude.pitch, 2), "roll": round(vehicle.vehicle.attitude.roll, 2), "yaw": round(vehicle.vehicle.attitude.yaw, 2)})
     except Exception as e:
         print(f"Error in get_lidar_data: {e}")
         return jsonify({"error": "Failed to get lidar data"})
