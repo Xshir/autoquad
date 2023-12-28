@@ -158,7 +158,7 @@
                 .then(response => response.json())
                 .then(data => {
                     const lidarDataDiv = document.getElementById("lidar-data");
-                    lidarDataDiv.innerHTML = `<p>Distance: ${data.distance} m</p><p>Temperature: ${data.temperature} °C</p>`;
+                    lidarDataDiv.innerHTML = `<p>Distance: ${data.distance} m</p><p>Temperature: ${data.temperature} °C</p> <p>Signal Strength: ${data.signal_strength}</p>`;
                 });
 
             // Fetch and update armed status
