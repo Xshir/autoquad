@@ -127,7 +127,11 @@ def get_lidar_data():
     try:
         # Pass the instantiated serial port to read_tfluna_data
         distance, signal_strength, temperature = read_tfluna_data(ser)
-        return jsonify({"distance": distance, "temperature": temperature, "signal_strength": signal_strength, "battery_level": vehicle.vehicle.battery.level})
+        batt_level = vehicle.vehicle.battery.level
+        if vehicle.vehicle.battery.level is None:
+            batt_level = "Information Unavailable"
+
+        return jsonify({"distance": distance, "temperature": temperature, "signal_strength": signal_strength, "battery_level": batt_level})
     except Exception as e:
         print(f"Error in get_lidar_data: {e}")
         return jsonify({"error": "Failed to get lidar data"})
