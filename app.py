@@ -126,7 +126,7 @@ def takeoff():
 def get_lidar_data():
     try:
         # Pass the instantiated serial port to read_tfluna_data
-        distance, temperature, signal_strength = read_tfluna_data(ser)
+        distance, signal_strength, temperature = read_tfluna_data(ser)
         return jsonify({"distance": distance, "temperature": temperature, "signal_strength": signal_strength})
     except Exception as e:
         print(f"Error in get_lidar_data: {e}")
