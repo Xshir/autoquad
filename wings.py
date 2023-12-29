@@ -84,13 +84,11 @@ class AutonomousQuadcopter:
         while self.vehicle.armed:
             distance, temp, signal_strength = read_tfluna_data(self.lidar_serial_object)
             self.current_altitude = distance
+            kp = 0.1
+            alt_error = self.target_altitude - self.current_altitude
+            correction = kp * alt_error
 
-            if self.current_altitude > self.target_altitude * 0.95:
-                takeoff_throttle -= 20
-                print(f"ALTITUDE LOGGER: MINUS 20 -> NOW {takeoff_throttle}")
-            else:
-                takeoff_throttle += 20
-                print(f"ALTITUDE LOGGER: PLUS 20 -> NOW {takeoff_throttle}")
+            takeoff_throttle = takeoff_throttle + correction
 
             takeoff_throttle = max(1000, min(1900, takeoff_throttle))  # throttle range checking
             self.vehicle.channels.overrides['3'] = int(takeoff_throttle)
