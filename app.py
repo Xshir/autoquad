@@ -119,7 +119,7 @@ def takeoff():
         return jsonify({"status": "success", "message": "Takeoff initiated."})
     except Exception as e:
         print(f"An error occurred in the mission: {e}")
-        print(traceback.extract_tb())
+        #print(traceback.extract_tb())
         return jsonify({"status": "error", "message": f"Failed to initiate takeoff: {str(e)}"})
 
 @app.route('/get_lidar_data')
@@ -130,7 +130,7 @@ def get_lidar_data():
         vehicle.lidar_distance = distance
         vehicle.lidar_signal_strength = signal_strength
         vehicle.lidar_temperature = temperature
-        
+
         try:
             if vehicle.vehicle.battery.level is None:
                 batt_level = "Information Unavailable"
