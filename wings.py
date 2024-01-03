@@ -9,6 +9,24 @@ class AutonomousQuadcopter:
         self.vehicle = connect(serial_port, baud=baud_rate, wait_ready=True, timeout=120)
         self.current_altitude = 0
         
+    def rangefinder_takeoff(self):
+            """
+            Takes off on ALT_HOLD mode. Returns "Reached Target Altitude" as a string if success. Returns "Failed" as a string if failed.
+            """
+            if self.vehicle.rangefinder.distance is None: # second check
+                self.lidar_failsafe_action()
+                return "Failed"
+            
+            self.vehicle.mode = VehicleMode("ALT_HOLD")
+            self.vehicle.channels.overrides['3'] = 1650  # throttle to takeoff (adjust if needed)
+
+            while 1: # while True but faster binary compilation
+                if self.vehicle.rangefinder.distance >= self.target_altitude * 0.90 and not self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
+                    return "Reached Target Altitude"
+                elif self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
+                    self.lidar_failsafe_action() # throttle param not lidar - too lazy to change func name
+                    return "Failed"
+
 
     def takeoff(self, rpm, target_altitude):
         self.vehicle.mode = VehicleMode("ALT_HOLD")
@@ -74,34 +92,7 @@ class AutonomousQuadcopter:
         self.vehicle.channels.overrides['1'] = takeoff_rpm 
 
 
-    def altitude_control(self, takeoff_throttle):
-        """
-        Adjusts the throttle to maintain the target altitude and hovers for 3 seconds.
-        """
-        hover_duration = 3  # seconds
-        start_hover_time = time.time()
-
-        while self.vehicle.armed:
-            distance, temp, signal_strength = read_tfluna_data(self.lidar_serial_object)
-            self.current_altitude = distance
-            kp = 0.1
-            alt_error = self.target_altitude - self.current_altitude
-            correction = kp * alt_error
-
-            takeoff_throttle = takeoff_throttle + correction
-
-            takeoff_throttle = max(1000, min(1900, takeoff_throttle))  # throttle range checking
-            self.vehicle.channels.overrides['3'] = int(takeoff_throttle)
-            print(f"[ALTITUDE CONTROL] Adjusting throttle to maintain altitude: {self.current_altitude} meters")
-
-            time.sleep(0.05) # was 0.25
-
-            # check if reached hover dur
-            if time.time() - start_hover_time >= hover_duration:
-                print("[ALTITUDE CONTROL] Hover duration reached. Exiting altitude control.")
-                break
-
-        print("[ALTITUDE CONTROL] Exiting altitude control.")
+    
 
 
     def basic_mission(self, target_altitude):
@@ -109,11 +100,17 @@ class AutonomousQuadcopter:
         Arms the motors, takes off to the specified altitude, rolls right for a brief moment,
         and then lands.
         """
-        takeoff_rpm = 1300
+        def lidar_failsafe_action(self):
+            self.vehicle.armed = False
+            print("[FAILSAFE] Check Lidar Connections or Configuration | If not Lidar Issue; Check throttle params")
+        # takeoff_rpm = 1300
         startup_mode = "STABILIZE"
         self.vehicle.mode = VehicleMode(startup_mode)
-        print(f"[PROGRAM STATUS]: MODE SET TO {startup_mode} | BATT: {self.vehicle.battery.level} @ {self.vehicle.battery.current}") 
+        print(f"[PROGRAM STATUS]: MODE SET TO {startup_mode}") 
         self.vehicle.armed = True
+
+        if self.vehicle.rangefinder.distance is None: # first check
+            lidar_failsafe_action()
 
         loop_count = 0
         while not self.vehicle.armed:
@@ -123,9 +120,27 @@ class AutonomousQuadcopter:
 
             time.sleep(1)
 
-
         print("[PROGRAM STATUS]: ARM SET | ARM COMPLETE")
-        print("[PROGRAM STATUS]: TAKEOFF")
+        
+        
+        if self.vehicle.armed:
+            takeoff_return = self.rangefinder_takeoff()
+
+
+            if takeoff_return == "Reached Target Altitude":
+                start_time = time.time()
+                self.vehicle.channels.overrides['3'] = 1500 # hover
+
+                if time.time() - start_time > 3:
+                    self.vehicle.mode = VehicleMode("LAND")
+            
+                
+
+            
+
+            
+            
+        """
         if self.vehicle.armed:
             result_of_takeoff = self.takeoff(takeoff_rpm, target_altitude)
             print(f"Vehicle is armed: {self.vehicle.armed} on takeoff!")
@@ -134,7 +149,6 @@ class AutonomousQuadcopter:
         
         # uncomment after development of dashboard
         if result_of_takeoff > 0: # successful takeoff since rpm is not 0 indicating no takeoff failure.
-            self.altitude_control(result_of_takeoff)
-            #self.roll(takeoff_rpm, 'right', 1, 50)
             self.vehicle.mode = VehicleMode("LAND")
             print("[Quadcopter] Landing Now.")
+        """

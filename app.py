@@ -4,12 +4,14 @@ import zxingcpp
 from wings import AutonomousQuadcopter
 import traceback
 import socket
-from lidar import read_tfluna_data
+#from lidar import read_tfluna_data
 import serial
 import time
 import fcntl
 import struct
 import pyttsx3
+import pywifi
+from pywifi import const
 
 
 app = Flask(__name__)
@@ -25,23 +27,25 @@ scanned_items = []
 cap = cv2.VideoCapture(0)
 vehicle = AutonomousQuadcopter()
 
-ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=0)
-ser.baudrate = 115200  # Set baud rate explicitly
-vehicle.lidar_serial_object = ser
-time.sleep(2)
+#ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=0)
+#ser.baudrate = 115200  # Set baud rate explicitly
+#vehicle.lidar_serial_object = ser
+#time.sleep(2)
 
-def text_to_speech(text, rate=100):
+def text_to_speech(text, rate=140, volume=1):
     # Initialize the text-to-speech engine
     engine = pyttsx3.init()
 
     # Set the speed of speech (words per minute)
     engine.setProperty('rate', rate)
+    engine.setProperty('volume', volume)
 
     # Convert text to speech and auto-play
     engine.say(text)
     engine.runAndWait()
 
-def get_ip_address(interface='wlan0'):
+
+def get_ip_and_ssid(interface='wlan0'):
     try:
         # Create a socket object to get the local machine's IP address
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -49,10 +53,15 @@ def get_ip_address(interface='wlan0'):
         # Get the IP address of the specified network interface (e.g., wlan0)
         ip_address = socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', bytes(interface[:15], 'utf-8')))[20:24])
 
-        return ip_address
+        # Get the current connected Wi-Fi SSID
+        wifi = pywifi.PyWiFi()
+        iface = wifi.interfaces()[0]  # Assuming there is only one Wi-Fi interface
+        ssid = iface.ssid()
+
+        return ip_address, ssid
     except Exception as e:
         print(f"Error: {e}")
-        return None
+        return None, None
 
 def generate_frames():
     while True:
@@ -126,7 +135,7 @@ def takeoff():
 def get_lidar_data():
     try:
         # Pass the instantiated serial port to read_tfluna_data
-        distance, signal_strength, temperature = read_tfluna_data(ser)
+        distance, signal_strength, temperature = 1,1,1
         vehicle.lidar_distance = distance
         vehicle.lidar_signal_strength = signal_strength
         vehicle.lidar_temperature = temperature
@@ -176,5 +185,9 @@ def remove_scanned_item():
 
 
 if __name__ == '__main__':
-    wlan_ip = get_ip_address()
-    app.run(host=wlan_ip, port=5000)
+    wlan_ip, ssid = get_ip_and_ssid()
+    try:
+        text_to_speech(f"Connected to WiFi at {ssid} with ip {wlan_ip}")
+        app.run(host=wlan_ip, port=5000)
+    except:
+        text_to_speech(f"Failed to run app, please debug and look into logs.")
