@@ -2,12 +2,18 @@ from dronekit import connect, VehicleMode
 import time
 from lidar import read_tfluna_data
 
+def lidar_failsafe_action(self):
+    self.vehicle.armed = False
+    print("[FAILSAFE] Check Lidar Connections or Configuration | If not Lidar Issue; Check throttle params")
+
+
 class AutonomousQuadcopter:
 
     def __init__(self):
         serial_port = '/dev/ttyACM0'; baud_rate = 9600
         self.vehicle = connect(serial_port, baud=baud_rate, wait_ready=True, timeout=120)
         self.current_altitude = 0
+        self.lidar_failsafe_action = lidar_failsafe_action
         
     def rangefinder_takeoff(self):
             """
@@ -20,13 +26,14 @@ class AutonomousQuadcopter:
             
             self.vehicle.mode = VehicleMode("ALT_HOLD")
             print("ALT HOLD")
-            self.vehicle.channels.overrides['3'] = 1700  # throttle to takeoff (adjust if needed)
+            self.vehicle.channels.overrides['3'] = 1680  # throttle to takeoff (adjust if needed)
 
             while 1: # while True but faster binary compilation
                 if self.vehicle.rangefinder.distance >= self.target_altitude * 0.90 and not self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
                     self.vehicle.channels.overrides['3'] = 1500 # hover
                     return "Reached Target Altitude"
                 elif self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
+                    print("TOO HIGH ALTITUDE")
                     self.lidar_failsafe_action() # throttle param not lidar - too lazy to change func name
                     return "Failed"
 
@@ -103,9 +110,7 @@ class AutonomousQuadcopter:
         Arms the motors, takes off to the specified altitude, rolls right for a brief moment,
         and then lands.
         """
-        def lidar_failsafe_action(self):
-            self.vehicle.armed = False
-            print("[FAILSAFE] Check Lidar Connections or Configuration | If not Lidar Issue; Check throttle params")
+
         # takeoff_rpm = 1300
         startup_mode = "STABILIZE"
         self.vehicle.mode = VehicleMode(startup_mode)
@@ -113,7 +118,7 @@ class AutonomousQuadcopter:
         self.vehicle.armed = True
 
         if self.vehicle.rangefinder.distance is None: # first check
-            lidar_failsafe_action()
+            self.lidar_failsafe_action()
 
         loop_count = 0
         while not self.vehicle.armed:
@@ -134,7 +139,7 @@ class AutonomousQuadcopter:
                 start_time = time.time()
                 
 
-                if time.time() - start_time > 10:
+                if time.time() - start_time > 7:
                     self.vehicle.mode = VehicleMode("LAND")
             
                 
