@@ -19,7 +19,8 @@ class AutonomousQuadcopter:
                 return "Failed"
             
             self.vehicle.mode = VehicleMode("ALT_HOLD")
-            self.vehicle.channels.overrides['3'] = 1650  # throttle to takeoff (adjust if needed)
+            print("ALT HOLD")
+            self.vehicle.channels.overrides['3'] = 1700  # throttle to takeoff (adjust if needed)
 
             while 1: # while True but faster binary compilation
                 if self.vehicle.rangefinder.distance >= self.target_altitude * 0.90 and not self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
