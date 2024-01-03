@@ -45,6 +45,7 @@ def text_to_speech(text, rate=140, volume=1):
     engine.runAndWait()
 
 
+
 def get_ip_and_ssid(interface='wlan0'):
     try:
         # Create a socket object to get the local machine's IP address
@@ -60,7 +61,7 @@ def get_ip_and_ssid(interface='wlan0'):
         connected_ssid = None
         scan_results = iface.scan_results()
         for result in scan_results:
-            if result.ssid == iface.status().ssid:
+            if result.bssid == iface.status().bssid:
                 connected_ssid = result.ssid
                 break
 
