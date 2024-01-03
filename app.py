@@ -58,12 +58,7 @@ def get_ip_and_ssid(interface='wlan0'):
         wifi = pywifi.PyWiFi()
         iface = wifi.interfaces()[0]  # Assuming there is only one Wi-Fi interface
 
-        connected_ssid = None
-        scan_results = iface.scan_results()
-        for result in scan_results:
-            if result.bssid == iface.status().bssid:
-                connected_ssid = result.ssid
-                break
+        connected_ssid = iface.ssid()
 
         return ip_address, connected_ssid
     except Exception as e:
