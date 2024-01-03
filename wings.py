@@ -24,8 +24,8 @@ class AutonomousQuadcopter:
                 self.lidar_failsafe_action()
                 return "Failed"
             
-            self.vehicle.mode = VehicleMode("ALT_HOLD")
-            print("ALT HOLD")
+            #self.vehicle.mode = VehicleMode("ALT_HOLD")
+            #print("ALT HOLD")
             self.vehicle.channels.overrides['3'] = 1680  # throttle to takeoff (adjust if needed)
 
             while 1: # while True but faster binary compilation
@@ -112,7 +112,7 @@ class AutonomousQuadcopter:
         """
 
         # takeoff_rpm = 1300
-        startup_mode = "STABILIZE"
+        startup_mode = "ALT_HOLD"
         self.vehicle.mode = VehicleMode(startup_mode)
         print(f"[PROGRAM STATUS]: MODE SET TO {startup_mode}") 
         self.vehicle.armed = True
