@@ -133,7 +133,7 @@ class AutonomousQuadcopter:
                 start_time = time.time()
                 self.vehicle.channels.overrides['3'] = 1500 # hover
 
-                if time.time() - start_time > 3:
+                if time.time() - start_time > 10:
                     self.vehicle.mode = VehicleMode("LAND")
             
                 
