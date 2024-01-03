@@ -12,6 +12,7 @@ import struct
 import pyttsx3
 import pywifi
 from pywifi import const
+import pyroute2
 
 
 app = Flask(__name__)
@@ -58,9 +59,12 @@ def get_ip_and_ssid(interface='wlan0'):
         wifi = pywifi.PyWiFi()
         iface = wifi.interfaces()[0]  # Assuming there is only one Wi-Fi interface
 
-        connected_ssid = iface.ssid()
+        # Use pyroute2 to get the connected Wi-Fi SSID
+        ipr = pyroute2.IPRoute()
+        idx = ipr.link_lookup(ifname=interface)[0]
+        ssid = ipr.get_links(idx)[0].get_attr('IFLA_WIRELESS').get('ssid')
 
-        return ip_address, connected_ssid
+        return ip_address, ssid.decode('utf-8') if ssid else None
     except Exception as e:
         print(f"Error: {e}")
         return None, None
