@@ -62,9 +62,12 @@ def get_ip_and_ssid(interface='wlan0'):
         # Use pyroute2 to get the connected Wi-Fi SSID
         ipr = pyroute2.IPRoute()
         idx = ipr.link_lookup(ifname=interface)[0]
-        ssid = ipr.get_links(idx)[0].get_attr('IFLA_WIRELESS').get('ssid')
+        wireless_attr = ipr.get_links(idx)[0].get_attr('IFLA_WIRELESS')
 
-        return ip_address, ssid.decode('utf-8') if ssid else None
+        # Check if IFLA_WIRELESS attribute exists and is not None
+        ssid = wireless_attr.get('ssid').decode('utf-8') if wireless_attr and wireless_attr.get('ssid') else None
+
+        return ip_address, ssid
     except Exception as e:
         print(f"Error: {e}")
         return None, None
