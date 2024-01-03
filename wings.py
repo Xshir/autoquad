@@ -24,6 +24,7 @@ class AutonomousQuadcopter:
 
             while 1: # while True but faster binary compilation
                 if self.vehicle.rangefinder.distance >= self.target_altitude * 0.90 and not self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
+                    self.vehicle.channels.overrides['3'] = 1500 # hover
                     return "Reached Target Altitude"
                 elif self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
                     self.lidar_failsafe_action() # throttle param not lidar - too lazy to change func name
@@ -131,7 +132,7 @@ class AutonomousQuadcopter:
 
             if takeoff_return == "Reached Target Altitude":
                 start_time = time.time()
-                self.vehicle.channels.overrides['3'] = 1500 # hover
+                
 
                 if time.time() - start_time > 10:
                     self.vehicle.mode = VehicleMode("LAND")
