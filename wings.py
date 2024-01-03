@@ -13,6 +13,7 @@ class AutonomousQuadcopter:
             """
             Takes off on ALT_HOLD mode. Returns "Reached Target Altitude" as a string if success. Returns "Failed" as a string if failed.
             """
+            self.target_altitude = 0.3
             if self.vehicle.rangefinder.distance is None: # second check
                 self.lidar_failsafe_action()
                 return "Failed"
