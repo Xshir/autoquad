@@ -3,6 +3,7 @@ import time
 from lidar import read_tfluna_data
 
 def lidar_failsafe_action(self):
+    self.vehicle.channels.overrides['3'] = 1001
     self.vehicle.armed = False
     print("[FAILSAFE] Check Lidar Connections or Configuration | If not Lidar Issue; Check throttle params")
 
@@ -26,7 +27,7 @@ class AutonomousQuadcopter:
             
             self.vehicle.mode = VehicleMode("ALT_HOLD")
             print("ALT HOLD")
-            self.vehicle.channels.overrides['3'] = 1680  # throttle to takeoff (adjust if needed)
+            self.vehicle.channels.overrides['3'] = 1700  # throttle to takeoff (adjust if needed)
             has_hit_target = False
 
             while 1: # while True but faster binary compilation
