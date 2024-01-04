@@ -150,7 +150,7 @@ def takeoff():
 def get_lidar_data():
     try:
         # Pass the instantiated serial port to read_tfluna_data
-        distance, signal_strength, temperature = 1,1,1
+        distance, signal_strength, temperature = vehicle.vehicle.rangefinder.distance, "unavailable", "unavailable"
         vehicle.lidar_distance = distance
         vehicle.lidar_signal_strength = signal_strength
         vehicle.lidar_temperature = temperature
@@ -202,8 +202,8 @@ def remove_scanned_item():
 if __name__ == '__main__':
     wlan_ip, ssid = get_ip_and_ssid()
     try:
-        text_to_speech(f"Connected to WiFi at {ssid} with ip {wlan_ip}")
+       # text_to_speech(f"Connected to WiFi at {ssid} with ip {wlan_ip}")
         print("tts done")
         app.run(host=wlan_ip, port=5000)
     except: 
-        text_to_speech(f"Failed to run app, please debug and look into logs.")
+        #text_to_speech(f"Failed to run app, please debug and look into logs.")
