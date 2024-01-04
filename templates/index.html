@@ -175,7 +175,31 @@ fetch("/get_lidar_data")
     .then(data => {
         const lidarDataDiv = document.getElementById("lidar-data");
 
-        // Create a canvas element
+        // Create a container div
+        const containerDiv = document.createElement("div");
+
+        // Create a table with lidar data
+        const table = document.createElement("table");
+        table.innerHTML = `
+            <tr>
+                <td>Distance</td>
+                <td>${data.distance} m</td>
+            </tr>
+            <tr>
+                <td>Pitch</td>
+                <td>${data.pitch} °</td>
+            </tr>
+            <tr>
+                <td>Roll</td>
+                <td>${data.roll} °</td>
+            </tr>
+            <tr>
+                <td>Yaw</td>
+                <td>${data.yaw} °</td>
+            </tr>
+        `;
+
+        // Create a canvas element for the clock
         const canvas = document.createElement("canvas");
         canvas.width = 300;
         canvas.height = 300;
@@ -192,12 +216,32 @@ fetch("/get_lidar_data")
         context.strokeStyle = "black";
         context.stroke();
 
-        // Draw clock hands (replace these with custom hands as needed)
-        drawClockHand(context, 150, 150, data.distance / 10, 5, "red"); // Distance as meter hand
+        // Draw clock markings
+        for (let i = 0; i < 12; i++) {
+            const angle = (i * Math.PI) / 6;
+            const startX = 150 + 120 * Math.cos(angle);
+            const startY = 150 - 120 * Math.sin(angle);
+            const endX = 150 + 140 * Math.cos(angle);
+            const endY = 150 - 140 * Math.sin(angle);
 
-        // Clear existing content and append the canvas
+            context.beginPath();
+            context.moveTo(startX, startY);
+            context.lineTo(endX, endY);
+            context.lineWidth = 4;
+            context.strokeStyle = "black";
+            context.stroke();
+        }
+
+        // Draw clock needle (distance as meter hand)
+        drawClockHand(context, 150, 150, data.distance / 10, 100, "red");
+
+        // Append the table and canvas to the container div
+        containerDiv.appendChild(table);
+        containerDiv.appendChild(canvas);
+
+        // Clear existing content and append the container div
         lidarDataDiv.innerHTML = "";
-        lidarDataDiv.appendChild(canvas);
+        lidarDataDiv.appendChild(containerDiv);
     });
 
 // Function to draw clock hands
