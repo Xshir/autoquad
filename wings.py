@@ -32,6 +32,7 @@ class AutonomousQuadcopter:
             while 1: # while True but faster binary compilation
                 print(f"rngfnd dist: {self.vehicle.rangefinder.distance} | target altitude: {self.target_altitude} | has_hit_target: {has_hit_target}")
                 if self.vehicle.rangefinder.distance <= self.target_altitude and has_hit_target is True: 
+                    print('LOWERED AFTER HITTING TARGET')
                     self.lidar_failsafe_action()
                 if self.vehicle.rangefinder.distance >= self.target_altitude * 0.90 and not self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
                     self.vehicle.channels.overrides['3'] = 1500 # hover
