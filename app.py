@@ -200,5 +200,5 @@ if __name__ == '__main__':
         text_to_speech(f"Connected to WiFi at {ssid} with ip {wlan_ip}")
         print("tts done")
         app.run(host=wlan_ip, port=5000)
-    except: pass
+    except: 
         text_to_speech(f"Failed to run app, please debug and look into logs.")
