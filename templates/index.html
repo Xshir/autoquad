@@ -209,7 +209,7 @@ fetch("/get_lidar_data")
 
         // Draw the clock face (half circle)
         context.beginPath();
-        context.arc(150, 150, 140, Math.PI, 2 * Math.PI);
+        context.arc(150, 150, 140, 0, Math.PI);
         context.fillStyle = "lightgray";
         context.fill();
         context.lineWidth = 2;
@@ -218,14 +218,14 @@ fetch("/get_lidar_data")
 
         // Draw clock markings and labels
         for (let i = 0; i < 4; i++) {
-            const angle = (i * Math.PI) / 6; // Adjust the angle to start from the left and go right
-            const labelX = 150 + 80 * Math.cos(angle);
-            const labelY = 150 - 80 * Math.sin(angle);
+            const angle = ((-i + 1) * Math.PI) / 6; // Adjust the angle to start from the top and go clockwise
+            const labelX = 150 + 100 * Math.cos(angle);
+            const labelY = 150 - 100 * Math.sin(angle);
 
-            const startX = 150 + 90 * Math.cos(angle);
-            const startY = 150 - 90 * Math.sin(angle);
-            const endX = 150 + 130 * Math.cos(angle);
-            const endY = 150 - 130 * Math.sin(angle);
+            const startX = 150 + 110 * Math.cos(angle);
+            const startY = 150 - 110 * Math.sin(angle);
+            const endX = 150 + 140 * Math.cos(angle);
+            const endY = 150 - 140 * Math.sin(angle);
 
             // Draw markings
             context.beginPath();
