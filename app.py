@@ -150,7 +150,7 @@ def takeoff():
 def get_lidar_data():
     try:
         # Pass the instantiated serial port to read_tfluna_data
-        distance, signal_strength, temperature = vehicle.vehicle.rangefinder.distance, "unavailable", "unavailable"
+        distance, signal_strength, temperature = round(vehicle.vehicle.rangefinder.distance, 2), "unavailable", "unavailable"
         vehicle.lidar_distance = distance
         vehicle.lidar_signal_strength = signal_strength
         vehicle.lidar_temperature = temperature
