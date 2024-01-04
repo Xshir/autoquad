@@ -170,14 +170,10 @@
                 });
 
 // Fetch and update lidar data
-// Fetch and update lidar data
 fetch("/get_lidar_data")
     .then(response => response.json())
     .then(data => {
         const lidarDataDiv = document.getElementById("lidar-data");
-
-        // Create a container div
-        const containerDiv = document.createElement("div");
 
         // Create a table with lidar data
         const table = document.createElement("table");
@@ -200,74 +196,11 @@ fetch("/get_lidar_data")
             </tr>
         `;
 
-        // Create a canvas element for the clock
-        const canvas = document.createElement("canvas");
-        canvas.width = 300;
-        canvas.height = 150; // Adjusted height for a half circle
-
-        // Get the 2D context of the canvas
-        const context = canvas.getContext("2d");
-
-        // Draw the clock face (half circle)
-        context.beginPath();
-        context.arc(150, 150, 140, 0, Math.PI);
-        context.fillStyle = "lightgray";
-        context.fill();
-        context.lineWidth = 2;
-        context.strokeStyle = "black";
-        context.stroke();
-
-        // Draw clock markings and labels
-        for (let i = 0; i < 4; i++) {
-            const angle = ((i + 1) * Math.PI) / 6; // Adjust the angle to start from the top and go clockwise
-            const labelX = 150 + 100 * Math.cos(angle);
-            const labelY = 150 - 100 * Math.sin(angle);
-
-            const startX = 150 + 110 * Math.cos(angle);
-            const startY = 150 - 110 * Math.sin(angle);
-            const endX = 150 + 140 * Math.cos(angle);
-            const endY = 150 - 140 * Math.sin(angle);
-
-            // Draw markings
-            context.beginPath();
-            context.moveTo(startX, startY);
-            context.lineTo(endX, endY);
-            context.lineWidth = 4;
-            context.strokeStyle = "black";
-            context.stroke();
-
-            // Draw labels
-            context.font = "14px Arial";
-            context.fillStyle = "black";
-            context.textAlign = "center";
-            context.textBaseline = "middle";
-            context.fillText(i, labelX, labelY);
-        }
-
-        // Draw clock needle (distance as meter hand)
-        drawClockHand(context, 150, 150, (data.distance / 3) * 360, 100, "red");
-
-        // Append the table and canvas to the container div
-        containerDiv.appendChild(table);
-        containerDiv.appendChild(canvas);
-
-        // Clear existing content and append the container div
+        // Clear existing content and append the table
         lidarDataDiv.innerHTML = "";
-        lidarDataDiv.appendChild(containerDiv);
+        lidarDataDiv.appendChild(table);
     });
 
-// Function to draw clock hands
-function drawClockHand(context, x, y, value, length, color) {
-    context.beginPath();
-    context.moveTo(x, y);
-    const angle = (value * Math.PI) / 180;
-    const newX = x + length * Math.cos(angle);
-    const newY = y - length * Math.sin(angle);
-    context.lineTo(newX, newY);
-    context.lineWidth = 5;
-    context.strokeStyle = color;
-    context.stroke();
-}
 
 
 
