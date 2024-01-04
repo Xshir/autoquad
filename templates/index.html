@@ -177,6 +177,7 @@ fetch("/get_lidar_data")
 
         // Create a table
         const table = document.createElement("table");
+        table.style.background-color= 'red'
         
         
         // Add table rows for each piece of lidar data
@@ -202,7 +203,7 @@ fetch("/get_lidar_data")
         // Clear existing content and append the table
         lidarDataDiv.innerHTML = "";
         lidarDataDiv.appendChild(table);
-        table.style.backgroundColor = 'red'
+        
     });
 
 
