@@ -175,10 +175,6 @@
                 .then(data => {
                     const lidarDataDiv = document.getElementById("lidar-data");
                     lidarDataDiv.innerHTML = `<p>Distance: ${data.distance} m</p>
-                         <p>Signal Strength: ${data.signal_strength}</p>
-                         <p>Temperature: ${data.temperature} °C</p>
-                         <p>Battery Voltage: ${data.battery_voltage} V</p>
-                         <p>Battery Level: ${data.battery_level}</p>
                          <p>Pitch: ${data.pitch} °</p>
                          <p>Roll: ${data.roll} °</p>
                          <p>Yaw: ${data.yaw} °</p>`;
