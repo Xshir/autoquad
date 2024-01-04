@@ -32,14 +32,15 @@ vehicle = AutonomousQuadcopter()
 #ser.baudrate = 115200  # Set baud rate explicitly
 #vehicle.lidar_serial_object = ser
 #time.sleep(2)
-
-def text_to_speech(text, rate=140, volume=1):
-    # Initialize the text-to-speech engine
-    engine = pyttsx3.init()
-
-    # Set the speed of speech (words per minute)
+def text_to_speech(text, rate=140, volume=1, card=1, device=0):
+    # Initialize the text-to-speech engine with specific card and device
+    engine = pyttsx3.init(driverName='espeak', debug=True)
     engine.setProperty('rate', rate)
     engine.setProperty('volume', volume)
+
+    # Set the audio output to the specified card and device
+    engine.setProperty('card', card)
+    engine.setProperty('device', device)
 
     # Convert text to speech and auto-play
     engine.say(text)
