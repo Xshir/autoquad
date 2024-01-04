@@ -32,15 +32,19 @@ vehicle = AutonomousQuadcopter()
 #ser.baudrate = 115200  # Set baud rate explicitly
 #vehicle.lidar_serial_object = ser
 #time.sleep(2)
+def configure_audio_output(card, device):
+    # Set the default audio output device using amixer
+    command = f"amixer -c {card} cset numid=3 {device}"  # Assuming card 1 (USB Audio) is used
+    os.system(command)
+
 def text_to_speech(text, rate=140, volume=1, card=1, device=0):
-    # Initialize the text-to-speech engine with specific card and device
+    # Initialize the text-to-speech engine
     engine = pyttsx3.init(driverName='espeak', debug=True)
     engine.setProperty('rate', rate)
     engine.setProperty('volume', volume)
 
-    # Set the audio output to the specified card and device
-    engine.setProperty('card', card)
-    engine.setProperty('device', device)
+    # Configure the audio output
+    configure_audio_output(card, device)
 
     # Convert text to speech and auto-play
     engine.say(text)
