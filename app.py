@@ -155,7 +155,7 @@ def get_lidar_data():
         vehicle.lidar_signal_strength = signal_strength
         vehicle.lidar_temperature = temperature
 
-        return jsonify({"distance": distance, , "pitch": round(vehicle.vehicle.attitude.pitch, 2), "roll": round(vehicle.vehicle.attitude.roll, 2), "yaw": round(vehicle.vehicle.attitude.yaw, 2)})
+        return jsonify({"distance": distance, "pitch": round(vehicle.vehicle.attitude.pitch, 2), "roll": round(vehicle.vehicle.attitude.roll, 2), "yaw": round(vehicle.vehicle.attitude.yaw, 2)})
     except Exception as e:
         print(f"Error in get_lidar_data: {e}")
         return jsonify({"error": "Failed to get lidar data"})
