@@ -2,7 +2,7 @@ from dronekit import connect, VehicleMode
 import time
 from lidar import read_tfluna_data
 
-def lidar_failsafe_action(self):
+def lidar_failsafe_action():
     self.vehicle.channels.overrides['3'] = 1001
     self.vehicle.armed = False
     print("[FAILSAFE] Check Lidar Connections or Configuration | If not Lidar Issue; Check throttle params")
