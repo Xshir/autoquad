@@ -171,6 +171,7 @@
 
 // Fetch and update lidar data
 // Fetch and update lidar data
+// Fetch and update lidar data
 fetch("/get_lidar_data")
     .then(response => response.json())
     .then(data => {
@@ -219,7 +220,7 @@ fetch("/get_lidar_data")
 
         // Draw clock markings and labels
         for (let i = 0; i < 9; i++) {
-            const angle = (i * Math.PI) / 4; // Adjust the angle to evenly distribute labels
+            const angle = ((-i + 1) * Math.PI) / 4; // Adjust the angle to start from the top and go clockwise
             const labelX = 150 + 115 * Math.cos(angle);
             const labelY = 150 - 115 * Math.sin(angle);
 
@@ -241,7 +242,7 @@ fetch("/get_lidar_data")
             context.fillStyle = "black";
             context.textAlign = "center";
             context.textBaseline = "middle";
-            context.fillText(i, labelX, labelY);
+            context.fillText(i === 0 ? "0" : i, labelX, labelY);
         }
 
         // Draw clock needle (distance as meter hand)
@@ -268,6 +269,7 @@ function drawClockHand(context, x, y, value, length, color) {
     context.strokeStyle = color;
     context.stroke();
 }
+
 
 
 
