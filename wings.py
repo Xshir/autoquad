@@ -11,7 +11,7 @@ class AutonomousQuadcopter:
 
     def __init__(self):
         serial_port = '/dev/ttyACM0'; baud_rate = 9600
-        self.vehicle = connect(serial_port, baud=baud_rate, wait_ready=True, timeout=120)
+        self.vehicle = connect(serial_port, baud=baud_rate, wait_ready=True)
         self.current_altitude = 0
         self.lidar_failsafe_action = lidar_failsafe_action
         
