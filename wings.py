@@ -19,18 +19,23 @@ class AutonomousQuadcopter:
             """
             Takes off on ALT_HOLD mode. Returns "Reached Target Altitude" as a string if success. Returns "Failed" as a string if failed.
             """
-            self.target_altitude = 0.3
+            self.target_altitude = 0.4
             if self.vehicle.rangefinder.distance is None: # second check
                 self.lidar_failsafe_action()
                 return "Failed"
             
-            #self.vehicle.mode = VehicleMode("ALT_HOLD")
-            #print("ALT HOLD")
+            self.vehicle.mode = VehicleMode("ALT_HOLD")
+            print("ALT HOLD")
             self.vehicle.channels.overrides['3'] = 1680  # throttle to takeoff (adjust if needed)
+            has_hit_target = False
 
             while 1: # while True but faster binary compilation
+                print(f"rngfnd dist: {self.vehicle.rangefinder.distance} | target altitude: {self.target_altitude} | has_hit_target: {has_hit_target}")
+                if self.vehicle.rangefinder.distance <= self.target_altitude and has_hit_target is True: 
+                    self.lidar_failsafe_action()
                 if self.vehicle.rangefinder.distance >= self.target_altitude * 0.90 and not self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
                     self.vehicle.channels.overrides['3'] = 1500 # hover
+                    has_hit_target = True
                     return "Reached Target Altitude"
                 elif self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
                     print("TOO HIGH ALTITUDE")
@@ -133,13 +138,14 @@ class AutonomousQuadcopter:
         
         if self.vehicle.armed:
             takeoff_return = self.rangefinder_takeoff()
+            print(f"RETURN VAL: {takeoff_return}")
 
 
             if takeoff_return == "Reached Target Altitude":
                 start_time = time.time()
                 
 
-                if time.time() - start_time > 7:
+                if time.time() - start_time > 5:
                     self.vehicle.mode = VehicleMode("LAND")
             else: print("FAILED CHECK LIDAR")
             
