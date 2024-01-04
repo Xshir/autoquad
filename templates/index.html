@@ -169,16 +169,40 @@
                     });
                 });
 
-            // Fetch and update lidar data
-            fetch("/get_lidar_data")
-                .then(response => response.json())
-                .then(data => {
-                    const lidarDataDiv = document.getElementById("lidar-data");
-                    lidarDataDiv.innerHTML = `<p>Distance: ${data.distance} m</p>
-                         <p>Pitch: ${data.pitch} °</p>
-                         <p>Roll: ${data.roll} °</p>
-                         <p>Yaw: ${data.yaw} °</p>`;
-                });
+// Fetch and update lidar data
+fetch("/get_lidar_data")
+    .then(response => response.json())
+    .then(data => {
+        const lidarDataDiv = document.getElementById("lidar-data");
+
+        // Create a table
+        const table = document.createElement("table");
+        
+        // Add table rows for each piece of lidar data
+        table.innerHTML = `
+            <tr>
+                <td>Distance</td>
+                <td>${data.distance} m</td>
+            </tr>
+            <tr>
+                <td>Pitch</td>
+                <td>${data.pitch} °</td>
+            </tr>
+            <tr>
+                <td>Roll</td>
+                <td>${data.roll} °</td>
+            </tr>
+            <tr>
+                <td>Yaw</td>
+                <td>${data.yaw} °</td>
+            </tr>
+        `;
+
+        // Clear existing content and append the table
+        lidarDataDiv.innerHTML = "";
+        lidarDataDiv.appendChild(table);
+    });
+
 
             // Fetch and update armed status
             fetch("/get_armed_status")
