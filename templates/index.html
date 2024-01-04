@@ -218,7 +218,7 @@ fetch("/get_lidar_data")
 
         // Draw clock markings and labels
         for (let i = 0; i < 4; i++) {
-            const angle = ((-i + 1) * Math.PI) / 6; // Adjust the angle to start from the top and go clockwise
+            const angle = ((i + 1) * Math.PI) / 6; // Adjust the angle to start from the top and go clockwise
             const labelX = 150 + 100 * Math.cos(angle);
             const labelY = 150 - 100 * Math.sin(angle);
 
@@ -267,6 +267,7 @@ function drawClockHand(context, x, y, value, length, color) {
     context.strokeStyle = color;
     context.stroke();
 }
+
 
 
 
