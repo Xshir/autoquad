@@ -170,6 +170,7 @@
                 });
 
 // Fetch and update lidar data
+// Fetch and update lidar data
 fetch("/get_lidar_data")
     .then(response => response.json())
     .then(data => {
@@ -216,20 +217,31 @@ fetch("/get_lidar_data")
         context.strokeStyle = "black";
         context.stroke();
 
-        // Draw clock markings
-        for (let i = 0; i < 12; i++) {
-            const angle = (i * Math.PI) / 6;
+        // Draw clock markings and labels
+        for (let i = 0; i < 9; i++) {
+            const angle = (i * Math.PI) / 4; // Adjust the angle to evenly distribute labels
+            const labelX = 150 + 115 * Math.cos(angle);
+            const labelY = 150 - 115 * Math.sin(angle);
+
             const startX = 150 + 120 * Math.cos(angle);
             const startY = 150 - 120 * Math.sin(angle);
             const endX = 150 + 140 * Math.cos(angle);
             const endY = 150 - 140 * Math.sin(angle);
 
+            // Draw markings
             context.beginPath();
             context.moveTo(startX, startY);
             context.lineTo(endX, endY);
             context.lineWidth = 4;
             context.strokeStyle = "black";
             context.stroke();
+
+            // Draw labels
+            context.font = "14px Arial";
+            context.fillStyle = "black";
+            context.textAlign = "center";
+            context.textBaseline = "middle";
+            context.fillText(i, labelX, labelY);
         }
 
         // Draw clock needle (distance as meter hand)
@@ -256,6 +268,7 @@ function drawClockHand(context, x, y, value, length, color) {
     context.strokeStyle = color;
     context.stroke();
 }
+
 
 
 
