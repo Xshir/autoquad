@@ -141,6 +141,7 @@ class AutonomousQuadcopter:
 
                 if time.time() - start_time > 7:
                     self.vehicle.mode = VehicleMode("LAND")
+            else: print("FAILED CHECK LIDAR")
             
                 
 
