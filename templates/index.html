@@ -175,11 +175,13 @@ fetch("/get_lidar_data")
     .then(data => {
         const lidarDataDiv = document.getElementById("lidar-data");
 
+        // Create a container div
+        const containerDiv = document.createElement("div");
+        containerDiv.style.backgroundColor = "red"; // Set the background color
+
         // Create a table
         const table = document.createElement("table");
-        table.style.background-color= 'red'
-        
-        
+
         // Add table rows for each piece of lidar data
         table.innerHTML = `
             <tr>
@@ -200,10 +202,12 @@ fetch("/get_lidar_data")
             </tr>
         `;
 
-        // Clear existing content and append the table
+        // Append the table to the container div
+        containerDiv.appendChild(table);
+
+        // Clear existing content and append the container div
         lidarDataDiv.innerHTML = "";
-        lidarDataDiv.appendChild(table);
-        
+        lidarDataDiv.appendChild(containerDiv);
     });
 
 
