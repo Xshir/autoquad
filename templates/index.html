@@ -170,7 +170,6 @@
                 });
 
 // Fetch and update lidar data
-// Fetch and update lidar data
 fetch("/get_lidar_data")
     .then(response => response.json())
     .then(data => {
@@ -203,14 +202,14 @@ fetch("/get_lidar_data")
         // Create a canvas element for the clock
         const canvas = document.createElement("canvas");
         canvas.width = 300;
-        canvas.height = 300;
+        canvas.height = 150; // Adjusted height for a half circle
 
         // Get the 2D context of the canvas
         const context = canvas.getContext("2d");
 
-        // Draw the clock face
+        // Draw the clock face (half circle)
         context.beginPath();
-        context.arc(150, 150, 140, 0, 2 * Math.PI);
+        context.arc(150, 150, 140, Math.PI, 2 * Math.PI);
         context.fillStyle = "lightgray";
         context.fill();
         context.lineWidth = 2;
@@ -218,15 +217,15 @@ fetch("/get_lidar_data")
         context.stroke();
 
         // Draw clock markings and labels
-        for (let i = 0; i < 3; i++) {
-            const angle = (i * Math.PI) / 2; // Adjust the angle to start from the top and go clockwise
-            const labelX = 150 + 85 * Math.cos(angle);
-            const labelY = 150 - 85 * Math.sin(angle);
+        for (let i = 0; i < 4; i++) {
+            const angle = (i * Math.PI) / 6; // Adjust the angle to start from the left and go right
+            const labelX = 150 + 80 * Math.cos(angle);
+            const labelY = 150 - 80 * Math.sin(angle);
 
             const startX = 150 + 90 * Math.cos(angle);
             const startY = 150 - 90 * Math.sin(angle);
-            const endX = 150 + 140 * Math.cos(angle);
-            const endY = 150 - 140 * Math.sin(angle);
+            const endX = 150 + 130 * Math.cos(angle);
+            const endY = 150 - 130 * Math.sin(angle);
 
             // Draw markings
             context.beginPath();
@@ -241,11 +240,11 @@ fetch("/get_lidar_data")
             context.fillStyle = "black";
             context.textAlign = "center";
             context.textBaseline = "middle";
-            context.fillText(i === 0 ? "0" : i, labelX, labelY);
+            context.fillText(i, labelX, labelY);
         }
 
         // Draw clock needle (distance as meter hand)
-        drawClockHand(context, 150, 150, (data.distance / 2) * 360, 100, "red");
+        drawClockHand(context, 150, 150, (data.distance / 3) * 360, 100, "red");
 
         // Append the table and canvas to the container div
         containerDiv.appendChild(table);
