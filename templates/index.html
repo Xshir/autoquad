@@ -233,7 +233,7 @@ fetch("/get_lidar_data")
         }
 
         // Draw clock needle (distance as meter hand)
-        drawClockHand(context, 150, 150, data.distance / 10, 100, "red");
+        drawClockHand(context, 150, 150, (data.distance / 8) * 360, 100, "red");
 
         // Append the table and canvas to the container div
         containerDiv.appendChild(table);
@@ -248,7 +248,7 @@ fetch("/get_lidar_data")
 function drawClockHand(context, x, y, value, length, color) {
     context.beginPath();
     context.moveTo(x, y);
-    const angle = Math.PI / 2 - (value * Math.PI) / 180;
+    const angle = (value * Math.PI) / 180;
     const newX = x + length * Math.cos(angle);
     const newY = y - length * Math.sin(angle);
     context.lineTo(newX, newY);
@@ -256,6 +256,7 @@ function drawClockHand(context, x, y, value, length, color) {
     context.strokeStyle = color;
     context.stroke();
 }
+
 
 
             // Fetch and update armed status
