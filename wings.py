@@ -40,7 +40,7 @@ class AutonomousQuadcopter:
                     self.vehicle.channels.overrides['3'] = 1620 # hover
                     self.has_hit_target = True
                     time.sleep(6)
-                    return
+                    break
                 elif self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
                     print("TOO HIGH ALTITUDE")
                     self.lidar_failsafe_action(self) # throttle param not lidar - too lazy to change func name
