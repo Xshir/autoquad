@@ -143,7 +143,7 @@ class AutonomousQuadcopter:
         
         if self.vehicle.armed:
             self.rangefinder_takeoff()
-            print(f"RETURN VAL: {self.has_hit_target} | {self.vehicle.channels.overrides['3']}")
+            print(f"MODE: {self.vehicle.mode} -> RETURN VAL: {self.has_hit_target} | {self.vehicle.channels.overrides['3']}")
             time.sleep(4)
             print(str(self.vehicle.channels.overrides['3']))
 
