@@ -15,6 +15,7 @@ class AutonomousQuadcopter:
         self.vehicle = connect(serial_port, baud=baud_rate, wait_ready=True)
         self.current_altitude = 0
         self.lidar_failsafe_action = lidar_failsafe_action
+        self.has_hit_target = False
         
     def rangefinder_takeoff(self):
             """
@@ -28,21 +29,22 @@ class AutonomousQuadcopter:
             self.vehicle.mode = VehicleMode("ALT_HOLD")
             print("ALT HOLD")
             self.vehicle.channels.overrides['3'] = 1700  # throttle to takeoff (adjust if needed)
-            has_hit_target = False
+            
 
             while 1: # while True but faster binary compilation
                 print(f"rngfnd dist: {self.vehicle.rangefinder.distance} | target altitude: {self.target_altitude} | has_hit_target: {has_hit_target}")
-                if self.vehicle.rangefinder.distance <= self.target_altitude and has_hit_target is True: 
+                if self.vehicle.rangefinder.distance <= self.target_altitude and self.has_hit_target is True: 
                     print('LOWERED AFTER HITTING TARGET')
                     self.lidar_failsafe_action(self)
                 if self.vehicle.rangefinder.distance >= self.target_altitude * 0.90 and not self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
-                    self.vehicle.channels.overrides['3'] = 1550 # hover
-                    has_hit_target = True
-                    return "Reached Target Altitude"
+                    self.vehicle.channels.overrides['3'] = 1620 # hover
+                    self.has_hit_target = True
+                    time.sleep(3)
+                    return
                 elif self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
                     print("TOO HIGH ALTITUDE")
                     self.lidar_failsafe_action(self) # throttle param not lidar - too lazy to change func name
-                    return "Failed"
+                    
 
 
     def takeoff(self, rpm, target_altitude):
@@ -139,14 +141,14 @@ class AutonomousQuadcopter:
         
         
         if self.vehicle.armed:
-            takeoff_return = self.rangefinder_takeoff()
-            print(f"RETURN VAL: {takeoff_return} | {self.vehicle.channels.overrides['3']}")
+            self.rangefinder_takeoff()
+            print(f"RETURN VAL: {self.has_hit_target} | {self.vehicle.channels.overrides['3']}")
             time.sleep(4)
             print(str(self.vehicle.channels.overrides['3']))
 
 
 
-            if takeoff_return == "Reached Target Altitude":
+            if self.has_hit_target:
                 start_time = time.time()
                 
 
