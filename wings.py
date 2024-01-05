@@ -2,7 +2,7 @@ from dronekit import connect, VehicleMode
 import time
 from lidar import read_tfluna_data
 
-def lidar_failsafe_action():
+def lidar_failsafe_action(self):
     self.vehicle.channels.overrides['3'] = 1001
     self.vehicle.armed = False
     print("[FAILSAFE] Check Lidar Connections or Configuration | If not Lidar Issue; Check throttle params")
@@ -22,7 +22,7 @@ class AutonomousQuadcopter:
             """
             self.target_altitude = 0.4
             if self.vehicle.rangefinder.distance is None: # second check
-                self.lidar_failsafe_action()
+                self.lidar_failsafe_action(self)
                 return "Failed"
             
             self.vehicle.mode = VehicleMode("ALT_HOLD")
@@ -34,14 +34,14 @@ class AutonomousQuadcopter:
                 print(f"rngfnd dist: {self.vehicle.rangefinder.distance} | target altitude: {self.target_altitude} | has_hit_target: {has_hit_target}")
                 if self.vehicle.rangefinder.distance <= self.target_altitude and has_hit_target is True: 
                     print('LOWERED AFTER HITTING TARGET')
-                    self.lidar_failsafe_action()
+                    self.lidar_failsafe_action(self)
                 if self.vehicle.rangefinder.distance >= self.target_altitude * 0.90 and not self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
                     self.vehicle.channels.overrides['3'] = 1550 # hover
                     has_hit_target = True
                     return "Reached Target Altitude"
                 elif self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
                     print("TOO HIGH ALTITUDE")
-                    self.lidar_failsafe_action() # throttle param not lidar - too lazy to change func name
+                    self.lidar_failsafe_action(self) # throttle param not lidar - too lazy to change func name
                     return "Failed"
 
 
@@ -125,7 +125,7 @@ class AutonomousQuadcopter:
         self.vehicle.armed = True
 
         if self.vehicle.rangefinder.distance is None: # first check
-            self.lidar_failsafe_action()
+            self.lidar_failsafe_action(self)
 
         loop_count = 0
         while not self.vehicle.armed:
