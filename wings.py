@@ -39,7 +39,7 @@ class AutonomousQuadcopter:
                 if self.vehicle.rangefinder.distance >= self.target_altitude * 0.90 and not self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
                     self.vehicle.channels.overrides['3'] = 1620 # hover
                     self.has_hit_target = True
-                    time.sleep(3)
+                    time.sleep(6)
                     return
                 elif self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
                     print("TOO HIGH ALTITUDE")
