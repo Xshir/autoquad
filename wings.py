@@ -140,7 +140,7 @@ class AutonomousQuadcopter:
         
         if self.vehicle.armed:
             takeoff_return = self.rangefinder_takeoff()
-            print(f"RETURN VAL: {takeoff_return}")
+            print(f"RETURN VAL: {takeoff_return} | {self.vehicle.channels.overrides['3']}")
 
 
             if takeoff_return == "Reached Target Altitude":
