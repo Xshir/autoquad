@@ -40,6 +40,7 @@ class AutonomousQuadcopter:
                     self.vehicle.channels.overrides['3'] = 1620 # hover
                     self.has_hit_target = True
                     time.sleep(6)
+                    self.vehicle.mode = VehicleMode("LAND")
                     break
                 elif self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
                     print("TOO HIGH ALTITUDE")
