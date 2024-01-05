@@ -36,7 +36,7 @@ class AutonomousQuadcopter:
                     print('LOWERED AFTER HITTING TARGET')
                     self.lidar_failsafe_action()
                 if self.vehicle.rangefinder.distance >= self.target_altitude * 0.90 and not self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
-                    self.vehicle.channels.overrides['3'] = 1500 # hover
+                    self.vehicle.channels.overrides['3'] = 1550 # hover
                     has_hit_target = True
                     return "Reached Target Altitude"
                 elif self.vehicle.rangefinder.distance >= self.target_altitude * 1.30:
@@ -148,6 +148,7 @@ class AutonomousQuadcopter:
                 
 
                 if time.time() - start_time > 5:
+                    print("HIT LANDING TIME")
                     self.vehicle.mode = VehicleMode("LAND")
             else: print("FAILED CHECK LIDAR")
             
