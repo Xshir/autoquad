@@ -32,7 +32,7 @@ class AutonomousQuadcopter:
             
 
             while 1: # while True but faster binary compilation
-                print(f"rngfnd dist: {self.vehicle.rangefinder.distance} | target altitude: {self.target_altitude} | has_hit_target: {self.has_hit_target}")
+                print(f"MODE: {self.vehicle.mode} | rngfnd dist: {self.vehicle.rangefinder.distance} | target altitude: {self.target_altitude} | has_hit_target: {self.has_hit_target}")
                 if self.vehicle.rangefinder.distance <= self.target_altitude and self.has_hit_target is True: 
                     print('LOWERED AFTER HITTING TARGET')
                     self.lidar_failsafe_action(self)
