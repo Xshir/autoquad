@@ -26,7 +26,7 @@ known_barcodes = {
 
 scanned_items = []
 cap = cv2.VideoCapture(1)
-barcode_standalone_bool = True
+barcode_standalone_bool = False
 vehicle = AutonomousQuadcopter(barcode_standalone=barcode_standalone_bool)
 if barcode_standalone_bool is False:
     import fcntl, pyroute2
