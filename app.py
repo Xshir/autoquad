@@ -18,14 +18,14 @@ from dronekit import VehicleMode
 app = Flask(__name__)
 known_barcodes = {
     # label : # desc
-    "350A": 'Airbus A350 XWB "Flying Raccoon"',
-    "380": 'Airbus A380 "SuperJumbo"',
-    "777": 'Boeing 777 "Cripple Seven"',
-    "787DL": 'Boeing 787 DreamLiner "TupperJet"'
+    "350A": 'inventory_item_800',
+    "380": 'inventory_item_800',
+    "777": 'inventory_item_300er',
+    "787DL": 'inventory_item_900'
 }
 
 scanned_items = []
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 barcode_standalone_bool = True
 vehicle = AutonomousQuadcopter(barcode_standalone=barcode_standalone_bool)
 if barcode_standalone_bool is False:
@@ -213,6 +213,6 @@ if __name__ == '__main__':
     try:
        # text_to_speech(f"Connected to WiFi at {ssid} with ip {wlan_ip}")
         print("tts done")
-        app.run(host=wlan_ip, port=5000)
+        app.run(host="192.168.0.46", port=5000)
     except: pass
         #text_to_speech(f"Failed to run app, please debug and look into logs.")
