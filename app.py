@@ -25,7 +25,7 @@ known_barcodes = {
 }
 
 scanned_items = []
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 barcode_standalone_bool = False
 vehicle = AutonomousQuadcopter(barcode_standalone=barcode_standalone_bool)
 if barcode_standalone_bool is False:
