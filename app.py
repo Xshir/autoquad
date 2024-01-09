@@ -58,7 +58,7 @@ def text_to_speech(text, rate=140, volume=1, card=1, device=0):
 def get_ip_and_ssid(interface='wlan0'):
     try:
 
-        if barcode_standalone_bool is False:
+        if barcode_standalone_bool is True:
             return "127.0.0.1", None
         # Create a socket object to get the local machine's IP address
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
