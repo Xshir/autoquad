@@ -154,7 +154,7 @@
         <div class="button" onclick="emergencyLanding()" style="cursor: pointer;">Emergency Landing</div>
     </div>
 
-    <<script>
+    <script>
         // Function to update the table with scanned items and Quadcopter Statistics
         function updateScannedItems() {
             fetch("/get_scanned_items")
@@ -180,14 +180,15 @@
         });
     
         // Fetch and update lidar data
-        fetch("/get_lidar_data")
-            .then(response => response.json())
-            .then(data => {
-                const lidarDataDiv = document.getElementById("lidar-data");
+        function updateLidarData() {
+            fetch("/get_lidar_data")
+                .then(response => response.json())
+                .then(data => {
+                    const lidarDataDiv = document.getElementById("lidar-data");
     
-                // Create a table with lidar data
-                const table = document.createElement("table");
-                table.innerHTML = `
+                    // Create a table with lidar data
+                    const table = document.createElement("table");
+                    table.innerHTML = `
                             <tr>
                                 <td>Distance</td>
                                 <td>${data.distance} m</td>
@@ -206,26 +207,31 @@
                             </tr>
                         `;
     
-                // Clear existing content and append the table
-                lidarDataDiv.innerHTML = "";
-                lidarDataDiv.appendChild(table);
-            });
+                    // Clear existing content and append the table
+                    lidarDataDiv.innerHTML = "";
+                    lidarDataDiv.appendChild(table);
+                });
+        }
     
         // Fetch and update armed status
-        fetch("/get_armed_status")
-            .then(response => response.json())
-            .then(data => {
-                const armedStatusDiv = document.getElementById("armed-status");
-                armedStatusDiv.innerHTML = `<p>Armed: ${data.armed ? "Yes" : "No"}</p>`;
-            });
+        function updateArmedStatus() {
+            fetch("/get_armed_status")
+                .then(response => response.json())
+                .then(data => {
+                    const armedStatusDiv = document.getElementById("armed-status");
+                    armedStatusDiv.innerHTML = `<p>Armed: ${data.armed ? "Yes" : "No"}</p>`;
+                });
+        }
     
         // Fetch and update drone statistics
-        fetch("/get_drone_statistics")
-            .then(response => response.json())
-            .then(data => {
-                const droneStatsDiv = document.getElementById("drone-stats");
-                droneStatsDiv.innerHTML = `<p>Magnetic Field: ${data.magnetic_field}</p><p>Battery Voltage: ${data.battery_voltage} V</p>`;
-            });
+        function updateDroneStats() {
+            fetch("/get_drone_statistics")
+                .then(response => response.json())
+                .then(data => {
+                    const droneStatsDiv = document.getElementById("drone-stats");
+                    droneStatsDiv.innerHTML = `<p>Magnetic Field: ${data.magnetic_field}</p><p>Battery Voltage: ${data.battery_voltage} V</p>`;
+                });
+        }
     
         // Function to remove a scanned item
         function removeItem(index) {
@@ -249,54 +255,19 @@
                 });
         }
     
-        // Function to refresh the table and drone statistics periodically
-        function refreshTable() {
+        // Function to refresh all parts of the page
+        function refreshPage() {
             updateScannedItems();
+            updateLidarData();
+            updateArmedStatus();
+            updateDroneStats();
         }
     
         // Set up regular updates using setInterval
-        setInterval(refreshTable, 50); // 5000 milliseconds (5 seconds)
-    
-        // JavaScript function to refresh the page
-        function refreshPage() {
-            location.reload();
-        }
-    
-        // Function to initiate takeoff
-        function takeoff() {
-            fetch("/takeoff", { method: "POST" })
-                .then(response => {
-                    if (response.ok) {
-                        console.log("Takeoff command sent successfully!");
-                    } else {
-                        console.error("Failed to send takeoff command.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error sending takeoff command:", error);
-                });
-        }
-    
-        // Function for emergency landing
-        function emergencyLanding() {
-            fetch("/emergency_landing", { method: "POST" })
-                .then(response => {
-                    if (response.ok) {
-                        console.log("Emergency landing initiated!");
-                    } else {
-                        console.error("Failed to initiate emergency landing.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error initiating emergency landing:", error);
-                });
-        }
+        setInterval(refreshPage, 5000); // Change the interval to a reasonable value (5000 ms = 5 seconds)
     
         // Initial update
-        updateScannedItems();
-    
-        // Start periodic updates
-        refreshTable();
+        refreshPage();
     </script>
     
 </body>
