@@ -10,9 +10,10 @@ def lidar_failsafe_action(self):
 
 class AutonomousQuadcopter:
 
-    def __init__(self):
+    def __init__(self, barcode_standalone=False):
         serial_port = '/dev/ttyACM0'; baud_rate = 9600
-        self.vehicle = connect(serial_port, baud=baud_rate, wait_ready=True)
+        if not barcode_standalone:
+            self.vehicle = connect(serial_port, baud=baud_rate, wait_ready=True)
         self.current_altitude = 0
         self.lidar_failsafe_action = lidar_failsafe_action
         self.has_hit_target = False

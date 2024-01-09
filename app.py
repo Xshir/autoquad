@@ -7,12 +7,12 @@ import socket
 #from lidar import read_tfluna_data
 import serial
 import time
-import fcntl
+
 import struct
 import pyttsx3
 import pywifi
 from pywifi import const
-import pyroute2
+from dronekit import VehicleMode
 
 
 app = Flask(__name__)
@@ -26,7 +26,10 @@ known_barcodes = {
 
 scanned_items = []
 cap = cv2.VideoCapture(0)
-vehicle = AutonomousQuadcopter()
+barcode_standalone_bool = True
+vehicle = AutonomousQuadcopter(barcode_standalone=barcode_standalone_bool)
+if barcode_standalone_bool is False:
+    import fcntl, pyroute2
 
 #ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=0)
 #ser.baudrate = 115200  # Set baud rate explicitly
@@ -54,6 +57,9 @@ def text_to_speech(text, rate=140, volume=1, card=1, device=0):
 
 def get_ip_and_ssid(interface='wlan0'):
     try:
+
+        if vehicle.barcode_standalone_bool is False:
+            return "127.0.0.1", None
         # Create a socket object to get the local machine's IP address
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         
@@ -181,6 +187,14 @@ def remove_scanned_item():
         print(f"Error in remove_scanned_item: {e}")
         return jsonify({"status": "error", "message": "Failed to remove scanned item."})
 
+
+@app.route('/emergency_landing', methods=['POST'])
+def emergency_landing():
+    vehicle.vehicle.mode = VehicleMode("LAND")
+    print("Emergency landing initiated!")
+    
+    # You can return a response if needed
+    return jsonify({"message": "Emergency landing initiated!"})
 
 
 if __name__ == '__main__':
