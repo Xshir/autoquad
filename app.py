@@ -130,12 +130,16 @@ def video_feed():
 
 @app.route('/download_csv')
 def download_csv():
-    with open('scanned_items.csv', 'w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(["No.", "LABEL", "Description"])
-        for i, item in enumerate(scanned_items, 1):
-            writer.writerow([i, item['label'], item['description']])
-    return send_from_directory('', 'scanned_items.csv', as_attachment=True)
+    csv_data = "No.,LABEL,Description\n"
+    for i, item in enumerate(scanned_items, 1):
+        csv_data += f"{i},{item['label']},{item['description']}\n"
+
+    response_headers = {
+        'Content-Disposition': 'attachment; filename=scanned_items.csv',
+        'Content-Type': 'text/csv',
+    }
+
+    return csv_data, 200, response_headers
 
 @app.route('/get_scanned_items')
 def get_scanned_items():
@@ -155,20 +159,27 @@ def takeoff():
 @app.route('/get_lidar_data')
 def get_lidar_data():
     try:
-        # Pass the instantiated serial port to read_tfluna_data
-        distance, signal_strength, temperature = round(vehicle.vehicle.rangefinder.distance, 2), "unavailable", "unavailable"
-        vehicle.lidar_distance = distance
-        vehicle.lidar_signal_strength = signal_strength
-        vehicle.lidar_temperature = temperature
+    
+      
+        if barcode_standalone_bool:
+            return jsonify({"distance": 0.0, "pitch": round(0.00, 2), "roll": round(0.00, 2), "yaw": round(0.00, 2)})
 
-        return jsonify({"distance": distance, "pitch": round(vehicle.vehicle.attitude.pitch, 2), "roll": round(vehicle.vehicle.attitude.roll, 2), "yaw": round(vehicle.vehicle.attitude.yaw, 2)})
+        else:
+            distance, signal_strength, temperature = round(vehicle.vehicle.rangefinder.distance, 2), "unavailable", "unavailable"
+            vehicle.lidar_distance = distance
+            vehicle.lidar_signal_strength = signal_strength
+            vehicle.lidar_temperature = temperature
+            return jsonify({"distance": distance, "pitch": round(vehicle.vehicle.attitude.pitch, 2), "roll": round(vehicle.vehicle.attitude.roll, 2), "yaw": round(vehicle.vehicle.attitude.yaw, 2)})
     except Exception as e:
         print(f"Error in get_lidar_data: {e}")
         return jsonify({"error": "Failed to get lidar data"})
 
 @app.route('/get_armed_status')
 def get_armed_status():
-    return jsonify({"armed": vehicle.vehicle.armed})
+    if barcode_standalone_bool:
+        return jsonify({"armed": "Yes"})
+    else:
+        return jsonify({"armed": vehicle.vehicle.armed})
 
 @app.route('/remove_scanned_item', methods=['POST'])
 def remove_scanned_item():
