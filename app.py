@@ -177,7 +177,7 @@ def get_lidar_data():
             elif use_raspberrypi_connected_lidar is True:
                 if ser is not None:
 
-                    distance, signal_strength, temperature = round(read_tfluna_data(ser), 2), "unavailable", "unavailable"
+                    distance, signal_strength, temperature = round(read_tfluna_data(ser)[0], 2), "unavailable", "unavailable"
                 else:
                     distance = '0.0'
             vehicle.lidar_distance = distance
