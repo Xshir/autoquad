@@ -4,9 +4,10 @@ import zxingcpp
 from wings import AutonomousQuadcopter
 import traceback
 import socket
-#from lidar import read_tfluna_data
+from lidar import read_tfluna_data
 import serial
 import time
+import platform
 
 import struct
 import pyttsx3
@@ -26,13 +27,19 @@ known_barcodes = {
 
 scanned_items = []
 cap = cv2.VideoCapture(0)
-barcode_standalone_bool = False
+barcode_standalone_bool = True
+use_raspberrypi_connected_lidar = True
 vehicle = AutonomousQuadcopter(barcode_standalone=barcode_standalone_bool)
 if barcode_standalone_bool is False:
     import fcntl, pyroute2
 
-#ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=0)
-#ser.baudrate = 115200  # Set baud rate explicitly
+if use_raspberrypi_connected_lidar is True:
+    if platform.system() == 'Windows':
+        ser = serial.Serial(port='COM6', baudrate=115200)
+    elif platform.system() == 'Linux':
+        ser = serial.Serial(port='/dev/ttyUSB0', baudrate=115200)
+
+
 #vehicle.lidar_serial_object = ser
 #time.sleep(2)
 def configure_audio_output(card, device):
@@ -161,15 +168,25 @@ def get_lidar_data():
     try:
     
       
-        if barcode_standalone_bool:
+        if barcode_standalone_bool is True and use_raspberrypi_connected_lidar is False:
             return jsonify({"distance": 0.0, "pitch": round(0.00, 2), "roll": round(0.00, 2), "yaw": round(0.00, 2)})
 
         else:
-            distance, signal_strength, temperature = round(vehicle.vehicle.rangefinder.distance, 2), "unavailable", "unavailable"
+            if use_raspberrypi_connected_lidar is False:
+                distance, signal_strength, temperature = round(vehicle.vehicle.rangefinder.distance, 2), "unavailable", "unavailable"
+            elif use_raspberrypi_connected_lidar is True:
+                if ser is not None:
+
+                    distance, signal_strength, temperature = round(read_tfluna_data(ser), 2), "unavailable", "unavailable"
+                else:
+                    distance = '0.0'
             vehicle.lidar_distance = distance
             vehicle.lidar_signal_strength = signal_strength
             vehicle.lidar_temperature = temperature
-            return jsonify({"distance": distance, "pitch": round(vehicle.vehicle.attitude.pitch, 2), "roll": round(vehicle.vehicle.attitude.roll, 2), "yaw": round(vehicle.vehicle.attitude.yaw, 2)})
+            try:
+                return jsonify({"distance": distance, "pitch": round(vehicle.vehicle.attitude.pitch, 2), "roll": round(vehicle.vehicle.attitude.roll, 2), "yaw": round(vehicle.vehicle.attitude.yaw, 2)})
+            except:
+                return jsonify({"distance": distance, "pitch": round(0, 2), "roll": round(0, 2), "yaw": round(0, 2)})
     except Exception as e:
         print(f"Error in get_lidar_data: {e}")
         return jsonify({"error": "Failed to get lidar data"})

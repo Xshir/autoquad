@@ -179,7 +179,6 @@
             }
         });
     
-        // Fetch and update lidar data
         function updateLidarData() {
             fetch("/get_lidar_data")
                 .then(response => response.json())
@@ -223,15 +222,7 @@
                 });
         }
     
-        // Fetch and update drone statistics
-        function updateDroneStats() {
-            fetch("/get_drone_statistics")
-                .then(response => response.json())
-                .then(data => {
-                    const droneStatsDiv = document.getElementById("drone-stats");
-                    droneStatsDiv.innerHTML = `<p>Magnetic Field: ${data.magnetic_field}</p><p>Battery Voltage: ${data.battery_voltage} V</p>`;
-                });
-        }
+
     
         // Function to remove a scanned item
         function removeItem(index) {
@@ -242,8 +233,10 @@
                 },
                 body: JSON.stringify({ index: index }),
             })
-                .then(response => {
-                    if (response.ok) {
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Server response:", data);
+                    if (data.success) {
                         console.log("Scanned item removed successfully!");
                         updateScannedItems();
                     } else {
@@ -264,7 +257,7 @@
         }
     
         // Set up regular updates using setInterval
-        setInterval(refreshPage, 50); // Change the interval to a reasonable value (5000 ms = 5 seconds)
+        setInterval(refreshPage, 1000); // Change the interval to a reasonable value (5000 ms = 5 seconds)
     
         // Initial update
         refreshPage();
